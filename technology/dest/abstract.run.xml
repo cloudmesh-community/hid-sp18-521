@@ -79,7 +79,7 @@
       <file>abstract.bcf</file>
     </requires>
     <requires type="editable">
-      <file>abstract-hid.bib</file>
+      <file>hid-sp18-521.bib</file>
     </requires>
   </external>
 </requests>
