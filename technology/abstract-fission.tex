@@ -1,0 +1,17 @@
+\section{Fission}
+\index{Fission}
+
+Fission \cite{hid-sp18-521-FissionBlog} is a serverless framework for
+Kubernetes. It allows you to create HTTP services on Kubernetes from
+functions and can help simplify the learning curve for Kubernetes by
+enabling a user to create useful services without knowing much about
+Kubernetes itself. Fission works at the source level and abstracts 
+away containers from the user. To use it, you create functions using
+a variety of languages and then add them with a CLI. You can then 
+associate those functions with HTTP routes, Kubernetes events and 
+other triggers. Functions are called when their trigger fires and 
+they only consume CPU and memory while they are running. Idle function 
+consume no resources with the exception of storage. Some of the 
+suggested use cases for Fission are creating small REST APIs, 
+implementing webhooks, writing chatbots and triggering functions 
+based on Kubernetes watches.
