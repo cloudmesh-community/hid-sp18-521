@@ -2,7 +2,7 @@ import pymysql.cursors
 
 connection = pymysql.connect(host='iu.ct18adbzpbgv.us-east-1.rds.amazonaws.com',
                              user='scs811s',
-                             password='rage0017',
+                             password='',
                              db='pds',
                              charset='utf8mb4',
                              cursorclass=pymysql.cursors.DictCursor)
