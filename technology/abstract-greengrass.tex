@@ -1,21 +1,11 @@
 \section{AWS Greengrass}
-AWS Greengrass~\cite{hid-sp18-521-Greengrass} lets the user run local compute, 
-messaging, data caching, sync, and ML inference capabilities on connected
-devices. Connected devices can then run AWS Lambda functions, keep device 
-data in sync, and communicate with other devices, even when not connected
-to the Internet. It is meant to extend AWS to devices so they can act 
-locally on the data they generate, while still using the cloud for 
-management, analytics, and storage. It can help you build IoT solutions 
-that connect different types of devices with the cloud and each other. 
-You can use a variety of languages and programming models to create your 
-device software in the cloud, and then deploy it to your devices. It can 
-also be programmed to filter device data and only transmit necessary 
-information back to the cloud. Devices that run Linux and support ARM or 
-x86 architectures can host the Greengrass Core which is what enables the
-local execution of AWS Lambda code, messaging, data caching, and security.
-The devices that are running AWS Greengrass Core can then act as a hub that 
-can communicate with other devices that have the AWS IoT Device SDK 
-installed. Those devices can then be configured to communicate with one 
-another in a Greengrass Group. If the Greengrass Core device loses 
-connectivity to the cloud, devices in the Greengrass Group can continue 
-to communicate with each other over the local network. 
+AWS Greengrass~\cite{hid-sp18-521-Greengrass} is a product that allows a
+developer to create serverless code residing on AWS that can then be run
+locally on your devices. Those devices are then able to act locally on the data
+it creates while being able to utilize the cloud for handling the infrastructure. 
+Devices can still communicate with each other even when unable to connect to the
+Internet. Filters can also be added locally to each device allowing the user to be 
+able to control what data is being sent back to the cloud. It can help users create
+IoT solutions which allow connectivity between many different types of devices
+and the cloud simultaneously. Greengrass supports many different programming languages.
+\end{document}
