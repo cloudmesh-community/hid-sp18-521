@@ -1,4 +1,4 @@
-import pymysql.cursors
+import pymysql
 
 connection = pymysql.connect(host='iu.ct18adbzpbgv.us-east-1.rds.amazonaws.com',
                              user='IUuser',
@@ -24,10 +24,20 @@ def provider_query_npi(npi):
 def provider_insert(providerInsert):
     sql = "INSERT INTO Provider (npi, provider_type, first_name, last_name, ssn) VALUES (%s,%s,%s,%s,%s)"
 
-    cursor.execute(sql, (providerInsert['npi'], providerInsert['provider_type'], providerInsert['first_name'], providerInsert
-                         ['last_name'], providerInsert['ssn']))
+    result = cursor.execute(sql, (providerInsert['npi'], providerInsert['provider_type'], providerInsert['first_name'], providerInsert
+                        ['last_name'], providerInsert['ssn']))
 
-    result = cursor.fetchall()
+    connection.commit()
 
     return result
+
+def provider_delete(npi):
+    sql = 'DELETE FROM Provider WHERE npi = %s'
+
+    result = cursor.execute(sql, (npi))
+
+    connection.commit()
+
+    return result
+
 
