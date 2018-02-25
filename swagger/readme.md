@@ -12,4 +12,4 @@ Sample curl calls for used for testing:
 
 Key Files:
 
-swagger.yaml - contains the Swaagger specification for a medical provider API to perform CRUD operations against a MySQL database  sitting on Amazon RDS.
+swagger.yaml - contains the Swaagger specification for a medical provider API.
