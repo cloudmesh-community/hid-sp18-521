@@ -22,7 +22,7 @@ all: dest
 
 pdflatex:
 	pdflatex abstract
-	bibtex abstract
+	biber abstract
 	pdflatex abstract
 	pdflatex abstract
 
