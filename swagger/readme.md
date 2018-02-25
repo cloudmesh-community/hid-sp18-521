@@ -10,6 +10,8 @@ Sample curl calls for used for testing:
 
 - curl -X DELETE "http://localhost:8080/PDS/provider/1234567899" -H  "accept: application/json"
 
+- curl -X PATCH "http://localhost:8080/PDS/provider/2145672234" -H  "accept: application/json" -H  "Content-Type: application/json" -d "{  \"npi\": 2145672234, \"provider_type\": \"Individual\", \"first_name\": \"Laura\", \"last_name\": \"NameChanged\", \"ssn\": 999887777}"
+
 Key Files:
 
 - swagger.yaml - contains the Swaagger specification for a medical provider API.
