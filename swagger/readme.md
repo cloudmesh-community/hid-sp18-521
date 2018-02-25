@@ -12,4 +12,6 @@ Sample curl calls for used for testing:
 
 Key Files:
 
-swagger.yaml - contains the Swaagger specification for a medical provider API.
+- swagger.yaml - contains the Swaagger specification for a medical provider API.
+
+- pds_functions.py - the functions used to perform the calls to the SQL database. These get imported and called in the default_controller.py file.
