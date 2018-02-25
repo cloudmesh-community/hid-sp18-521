@@ -33,7 +33,7 @@ paths:
           schema:
             $ref: "#/definitions/inline_response_400"
       x-swagger-router-controller: "swagger_server.controllers.default_controller"
-    post:
+    put:
       description: "User can insert a new provider record."
       operationId: "create_provider"
       parameters:
@@ -96,9 +96,15 @@ paths:
       parameters:
       - name: "npi"
         in: "path"
-        description: "Provider type of providers to return"
+        description: "NPI of provider to update"
         required: true
         type: "integer"
+      - in: "body"
+        name: "provider"
+        description: "Data for update"
+        required: false
+        schema:
+          $ref: "#/definitions/Provider"
       responses:
         200:
           description: "Returns the updated provider data."
@@ -116,8 +122,6 @@ definitions:
     type: "object"
     required:
     - "npi"
-    - "provider_type"
-    - "ssn"
     properties:
       npi:
         type: "integer"

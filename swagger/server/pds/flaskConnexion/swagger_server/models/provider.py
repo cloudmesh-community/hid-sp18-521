@@ -103,8 +103,6 @@ class Provider(Model):
         :param provider_type: The provider_type of this Provider.
         :type provider_type: str
         """
-        if provider_type is None:
-            raise ValueError("Invalid value for `provider_type`, must not be `None`")  # noqa: E501
 
         self._provider_type = provider_type
 
@@ -168,7 +166,5 @@ class Provider(Model):
         :param ssn: The ssn of this Provider.
         :type ssn: int
         """
-        if ssn is None:
-            raise ValueError("Invalid value for `ssn`, must not be `None`")  # noqa: E501
 
         self._ssn = ssn

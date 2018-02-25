@@ -1,6 +1,5 @@
 import connexion
 import six
-
 import imp
 
 pds_functions = imp.load_source('pds_functions', '/home/scs811s/Github/hid-sp18-521/swagger/pds_functions.py')
@@ -24,9 +23,8 @@ def create_provider(provider=None):  # noqa: E501
         #provider = Provider.from_dict(connexion.request.get_json())  # noqa: E501
         provider = connexion.request.get_json()
 
-        result = pds_functions.provider_insert(provider)
+        return pds_functions.provider_insert(provider)
 
-        return result
 
 def delete_provider(npi):  # noqa: E501
     """delete_provider
@@ -38,9 +36,7 @@ def delete_provider(npi):  # noqa: E501
 
     :rtype: None
     """
-    result = pds_functions.provider_delete(npi)
-
-    return result
+    return pds_functions.provider_delete(npi)
 
 
 def get_provider(npi):  # noqa: E501
@@ -67,14 +63,19 @@ def get_providers():  # noqa: E501
     return Provider(pds_functions.provider_query_all())
 
 
-def update_provider(npi):  # noqa: E501
+def update_provider(npi, provider=None):  # noqa: E501
     """update_provider
 
     Update a providers information based on NPI supplied # noqa: E501
 
-    :param npi: Provider type of providers to return
+    :param npi: NPI of provider to update
     :type npi: int
+    :param provider: Data for update
+    :type provider: dict | bytes
 
     :rtype: List[Provider]
     """
-    return 'do some magic!'
+    if connexion.request.is_json:
+        provider = connexion.request.get_json()
+
+    return pds_functions.provider_update(npi, provider)

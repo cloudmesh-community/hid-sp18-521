@@ -21,7 +21,7 @@ class TestDefaultController(BaseTestCase):
         provider = Provider()
         response = self.client.open(
             '/PDS/provider',
-            method='POST',
+            method='PUT',
             data=json.dumps(provider),
             content_type='application/json')
         self.assert200(response,
@@ -68,9 +68,11 @@ class TestDefaultController(BaseTestCase):
 
         
         """
+        provider = Provider()
         response = self.client.open(
             '/PDS/provider/{npi}'.format(npi=56),
             method='PATCH',
+            data=json.dumps(provider),
             content_type='application/json')
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))

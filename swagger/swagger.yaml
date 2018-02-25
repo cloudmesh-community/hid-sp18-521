@@ -28,7 +28,7 @@
                 $ref: "#/definitions/Provider"
           400:
             $ref: '#/responses/400Error'
-      post:
+      put:
         description: "User can insert a new provider record."
         operationId: "createProvider"
         parameters:
@@ -68,9 +68,14 @@
         parameters: 
           - name: "npi"
             in: "path"
-            description: "Provider type of providers to return"
+            description: "NPI of provider to update"
             required: true
             type: "integer"
+          - name: provider
+            in: body
+            description: "Data for update"
+            schema:
+              $ref: '#/definitions/Provider'
         responses:
           200:
             description: "Returns the updated provider data."
@@ -100,8 +105,6 @@
       type: "object"
       required: 
         - "npi"
-        - "provider_type"
-        - "ssn"
       properties: 
         npi: 
           type: "integer"

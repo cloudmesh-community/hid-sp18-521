@@ -23,21 +23,22 @@ def provider_query_npi(npi):
 
 def provider_insert(providerInsert):
     sql = "INSERT INTO Provider (npi, provider_type, first_name, last_name, ssn) VALUES (%s,%s,%s,%s,%s)"
-
     result = cursor.execute(sql, (providerInsert['npi'], providerInsert['provider_type'], providerInsert['first_name'], providerInsert
                         ['last_name'], providerInsert['ssn']))
-
     connection.commit()
-
     return result
 
 def provider_delete(npi):
     sql = 'DELETE FROM Provider WHERE npi = %s'
-
     result = cursor.execute(sql, (npi))
-
     connection.commit()
+    return result
 
+def provider_update(npi, providerUpdate):
+    sql = "UPDATE Provider SET provider_type = %s, first_name = %s, last_name = %s, ssn = %s WHERE npi = %s"
+    result = cursor.execute(sql, (providerUpdate['provider_type'], providerUpdate['first_name'], providerUpdate
+                        ['last_name'], providerUpdate['ssn'], npi))
+    connection.commit()
     return result
 
 
