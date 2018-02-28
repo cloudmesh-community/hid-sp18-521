@@ -23,7 +23,7 @@ def create_provider(provider=None):  # noqa: E501
         #provider = Provider.from_dict(connexion.request.get_json())  # noqa: E501
         provider = connexion.request.get_json()
 
-        return pds_functions.provider_insert(provider)
+        return str(pds_functions.provider_insert(provider)) + " row(s) inserted"
 
 
 def delete_provider(npi):  # noqa: E501
@@ -36,7 +36,7 @@ def delete_provider(npi):  # noqa: E501
 
     :rtype: None
     """
-    return pds_functions.provider_delete(npi)
+    return str(pds_functions.provider_delete(npi)) + " row(s) deleted"
 
 
 def get_provider(npi):  # noqa: E501
@@ -78,4 +78,4 @@ def update_provider(npi, provider=None):  # noqa: E501
     if connexion.request.is_json:
         provider = connexion.request.get_json()
 
-    return pds_functions.provider_update(npi, provider)
+    return str(pds_functions.provider_update(npi, provider)) + " row(s) updated"

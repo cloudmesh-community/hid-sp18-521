@@ -1,8 +1,11 @@
 import pymysql
+import imp
+
+config = imp.load_source('config', '/home/scs811s/Github/hid-sp18-521/swagger/config.py')
 
 connection = pymysql.connect(host='iu.ct18adbzpbgv.us-east-1.rds.amazonaws.com',
-                             user='IUuser',
-                             password='Password123',
+                             user=config.user,
+                             password=config.password,
                              db='pds',
                              charset='utf8mb4',
                              cursorclass=pymysql.cursors.DictCursor)
