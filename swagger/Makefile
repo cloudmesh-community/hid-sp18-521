@@ -24,6 +24,11 @@ test:
 	curl -X PATCH "http://localhost:8080/cloudmesh/sql/hid-sp18-521/provider/2145672234" -H  "accept: application/json" -H  "Content-Type: application/json" -d "{  \"npi\": 2145672234, \"provider_type\": \"Individual\", \"first_name\": \"Laura\", \"last_name\": \"NameChanged\", \"ssn\": 999887777}"
 	curl -X DELETE "http://localhost:8080/cloudmesh/sql/hid-sp18-521/provider/2145672234" -H  "accept: application/json"
 
+container:
+	docker build -t cloudmesh-sql .
+	docker create cloudmesh-sql
+
+	
 	
 
 
