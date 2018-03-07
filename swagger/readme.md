@@ -29,5 +29,7 @@ This folder contains the files necessary to create and deploy a server side REST
         ```sh
         make test
         ```
-
-
+    -  Create a Docker image and container using Dockerfile:
+        ```sh
+        make container
+        ```
