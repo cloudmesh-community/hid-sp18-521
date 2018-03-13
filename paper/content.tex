@@ -1,321 +1,60 @@
-\title{Big Data for Edge Computing}
+\title{Amazon EMR}
 
 
-\author{Albert Zweistein}
-\orcid{1234-5678-9012}
-\affiliation{%
-  \institution{Institute for Plasma Physics in Documentation}
-  \streetaddress{P.O. Box 1234}
-  \city{Berlin} 
-  \state{Ohio} 
-  \postcode{123456-12345}
-}
-\email{trovato@corporation.com}
-
-\author{Gregor von Laszewski}
+\author{Scott Steinbruegge}
 \affiliation{%
   \institution{Indiana University}
-  \streetaddress{Smith Research Center}
   \city{Bloomington} 
   \state{IN} 
   \postcode{47408}
   \country{USA}}
-\email{laszewski@gmail.com}
+\email{srsteinb@iu.edu}
 
 
 % The default list of authors is too long for headers}
-\renewcommand{\shortauthors}{G. v. Laszewski}
+\renewcommand{\shortauthors}{S. Steinbruegge}
 
 
 \begin{abstract}
-This paper provides a sample of a \LaTeX\ document which conforms,
-somewhat loosely, to the formatting guidelines for
-ACM SIG Proceedings.
+Amazon EMR is a Hadoop framework that allows users to process data on the AWS platform using their EC2 technology to spread the load across multiple EC2 instances. Elasticity a major benefit of EMR as it can be set to auto scale up or down the number of EC2 instances that EMR is running in a cluster. The user can choose to run additional frameworks supported on EMR in addition to Hadoop, such as Spark, HBase, Flink and Presto. The platform allows the user to focus on the processing of the data and not have to deal with the setup, management or tuning of a Hadoop cluster. Using EMR allows a user to setup and provision a cluster quickly and allows for scalability of compute resources up or down and in or out as needed. Interactions with EMR can occur through a web service interface or by using the AWS Management Console to launch and monitor clusters. To effectively configure and use EMR, knowledge of how EMR infrastructure is provisioned and how the EMR service architecture works is beneficial.  
 \end{abstract}
 
-\keywords{hid000, use up to 5 keywords}
-
+\keywords{hid521, hid-sp18-521, i524, Amazon, EMR}
 
 \maketitle
 
-\section{Organization}
-
-The instructions are available at 
-
-\url{https://github.com/cloudmesh-community/hid-sample/blob/master/paper-instructions.md}
-
-It will bring you to a link allowing you to easily download the PDF
-version of the instructions. The PDF document is located at 
-
-\url{https://github.com/cloudmesh-community/hid-sample/raw/master/paper-instructions.pdf}
-
-
-The template is located at
-
-\url{https://github.com/cloudmesh-community/hid-sample/tree/master/paper}
-
-
-This sample has some advanced features that may not be offered by
-other \LaTeX\ frameworks. All of these features are accessible at this
-time throug a makefile. These advanced features are optional and
-introduce a number of automated tests for the document. Such tests are
-executed through a Makefile. Such makefiles can be executed on Linux
-or OSX. They are not available on sharelatex. As we have taught you
-how to set up a Linux system in class it is part of the leraning
-experience that you use that to verify the correctness of your
-paper. Alternatively you can set up a docker container and use
-that. It will be your responsibility to create such a container or set
-up the Linux environment with a \textit{full} version of \LaTeX\ and biber
-installed.
-
-The document is organized in a a repository, that needs to be
-replicated into your github repository. {\bf Please make sure that all
-  filenames and directory names but a README.md are all lower case and
-  have no underscore in it. Please make sure they do not contain a
-  space in the filename.} We repeat again: Be mindful about the
-capitalization of filenames and directory names. We only use lower
-case for any file in our directory and we never use spaces or non ASCI
-characters. 
-
-IN order for you to most easily compile the paper you will also need
-to check out the directory hid-sample that includes the formats. 
-
-Your recommended directories should look like
-
-\begin{verbatim}
-~/github/cloudmesh-community/hid-samle
-~/github/cloudmesh-community/hid-sp18-000
-\end{verbatim}
-
-where 000 the number part of your hid. The two hid directories are
-cloned from github. We taught you how to do this and it is a class
-goal that you know how to do it. 
-
-In your hid folder you will find, once it is set up the following
-directory and files:
-
-
-We have the following files that you will modify:
-
-\begin{verbatim}
-paper/content.tex
-paper/report.tex
-paper/report.bib
-images/README.md
-\end{verbatim}
-
-We separated the content from the report format into two different
-files, as we found that students in the past manipulated our format to
-circumvent our page limitation and artificially increased spacing and
-other unnecessary things that we would consider as cheating.
-If you
-
-Thus the only file you are allowed to modify is the content.tex file
-and the report.bib bibliography file and the images directory in which
-you place your images.
-
-Within the text, images and tables are {\bf must} be placed in floats
-as discussed in the handbook. You can place them with \verb|[htb]| at
-any place in the document. However, we will for the submission force
-the placement at the end of the document. You do not have to place
-them at the end. Please keep in mind that tables and figurs and
-programs that are also to be placed in figures do not count towards
-the paper length. Please also be reminded this is not a presentation
-and that lengthy enumerations will lead to point deductions. IN case
-of questions, consult with the TAs.
-
 \section{Introduction}
 
-Put here an introduction about your topic. 
-We just need one sample reference so the paper compiles in \LaTeX\ so we
-put it here~\cite{editor00}.
+AWS has described EMR as ``a managed cluster platform that simplifies running big data frameworks, such as Apache Hadoop and Apache Spark, on AWS to process and analyze vast amounts of data. By using these frameworks and related open-source projects, such as Apache Hive and Apache Pig, you can process data for analytics purposes and business intelligence workloads~\cite{hid-sp18-521-amazonemr-whatisemr}.'' EMR provides a variety of features which make it an attractive platform to work with for many different big data use cases. Elasticity, as with any cloud computing platform, is the major feature of EMR. Deploying a new cluster or resizing an existing cluster are both options. This elasticity allows the user to either automatically or manually scale an EMR cluster up or down based on processing needs. On demand cluster provisioning can also be done for scenarios when a user needs to run a one-time job, which can then be setup to shut down on completion in order to avoid paying unnecessary idle resource fees. But excess capacity never has to be provisioned based on a guess for future requirements and can be handled automatically based on CloudWatch metrics and a specified scaling policy~\cite{hid-sp18-521-amazonemr-details}.  
 
-\section{Figures}
+Multiple types of data stores can be integrated into EMR such as S3 (via EMR File System), HDFS, DynamoDB, Redshift, Glacier and RDS. On premise data stores can also be used by EMR by integrating the AWS Data Pipeline, which can move data between on premise and AWS at chosen intervals. EMR fully supports Hadoop tools to which AWS has added modifications to that allow for improved interactions with other AWS services, some of which will be covered below in more detail the frameworks and applications section~\cite{hid-sp18-521-amazonemr-details}.  
 
-In Figure~\ref{f:fly} we show a fly. Please note that because we use
-just columwidth that the size of the figure will change to the
-columnwidth of the paper once we change the layout to final. Changing
-the layout to final should not be done by you. All figures will be
-listed at the end.  Please do not use phrases such as \textit{shown in
-  the figure below}. Instead use such as shown in Figure~\ref{f:fly}.
+Many other features are included that enhance usability. The type of EC2 instances provisioned for an EMR cluster can be chosen based on the requirements of the use case, allowing the cluster to be built to handle standard, high CPU, high memory or high I/O based workloads. Additional configuration of EMR clusters can also be performed as root access can be granted to a user to perform further customization at the EC2 instance level. Amazon Cloudwatch can be used to monitor the performance of your EMR clusters and setup alarms on metrics you're interested in tracking. Deep learning frameworks are also supported on EMR within clusters that were created with a focus on increased GPU capabilities. Additional software can be installed on nodes within the cluster by using bootstrap scripts that execute when the cluster is launched. The EMR team at AWS also curates a Github repository of bootstrap scripts that can be used for installing and configuring additional software to EMR clusters~\cite{hid-sp18-521-amazonemr-details}. 
 
-\begin{figure}[!ht]
-  \centering\includegraphics[width=\columnwidth]{../../hid-sample/tex/images/fly.pdf}
-  \caption{Example caption}\label{f:fly}
-\end{figure}
+\section{Architecture}
 
-To avoid copying the example figure in each hid directory, we actually
-import it from the hid-sample directory. Lets assume you have a figure
-in the image directory called myfigure.pdf. You can than replace the
-line in the example with
+A group of EC2 instances is what makes up an EMR cluster, which is the central component of EMR. Each EC2 instance in a cluster is called a node, of which there are three different node types. Every node type has different role and can have different software installed, allowing each node to play a specific role within the cluster that can then be utilized by any distributed applications the cluster is running. The master node is where management of the cluster occurs and contains the software that handles where data and tasks are dispersed between the other nodes, called slave nodes, for further processing. It also tracks cluster health and status of tasks that it has assigned. There are two types of slave nodes, core nodes and task nodes. Core nodes are where data in the HDFS is stored within the cluster and can contain additional software components which execute tasks. Task nodes are optional and are only allowed to run software to execute tasks~\cite{hid-sp18-521-amazonemr-overview}. 
 
-\begin{verbatim}
-\centering\includegraphics[width=\columnwidth]{images/myfigure.pdf}
-\end{verbatim}
+Once a cluster is up and running, work can be submitted to it in a variety of ways: through the AWS Management Console, through the interface of the applications installed on the cluster, through APIs or using the AWS CLI. By using one of these methods, data can then be processed by either submitting jobs or queries directly to the specific applications installed on the cluster or by running ordered steps on the cluster. A step is considered a unit of work that tells the specified application how to manipulate the data. Data can be passed from one step to the next with each step calling a different application if needed. By default, when a step fails, all subsequent steps are then cancelled and no longer set to be run, but this behavior can be changed to ignore failures and continue with running the remaining steps~\cite{hid-sp18-521-amazonemr-overview}. 
 
-In case you use png than you must have a png that is at least 300dpi
-(find out what that means and how to do that) and use 
+Each EMR cluster follows a lifecycle during its creation. When a cluster is first provisioned with the applications the user has chosen, the cluster enters a starting state. Afterwards, the cluster goes into the bootstrapping state, which is where bootstrap actions such as additional software and any user-defined actions are then executed on the cluster. Once the bootstrapping state has completed, the cluster then enters the running state and is ready to accept and run jobs, queries or steps. If the cluster is set to automatically terminate after the completed steps, it will then enter the shutting down state which terminates all EC2 instances in the cluster and all data that was stored inside the cluster gets deleted. After a successful shutdown state, the cluster then moves to the completed state. Or if the cluster has auto terminate disabled, it then goes to the waiting state and stays online and ready to accept new commands at any time. This cluster would then need to be manually terminated whenever it is no longer needed. Any failures within the lifecycle of a cluster would cause the process to terminate the whole cluster including all of its EC2 instances and any data stored directly on the cluster. But there is a termination protection option that can be enabled which will allow the user to retrieve data from the cluster before it becomes fully terminated~\cite{hid-sp18-521-amazonemr-overview}. 
 
-\begin{verbatim}
-\centering\includegraphics[width=\columnwidth]{images/myotehrfigure.png}
-\end{verbatim}
+There are four layers of architecture which supply different functionality to an EMR cluster: storage, cluster resource management, data processing frameworks and applications and programs. The storage layer refers to the type of file system used by the cluster. Storage options include HDFS, EMR File System (EMRFS) and local file systems. ``Hadoop Distributed File System (HDFS) is a distributed, scalable file system for Hadoop. HDFS distributes the data it stores across instances in the cluster, storing multiple copies of data on different instances to ensure that no data is lost if an individual instance fails~\cite{hid-sp18-521-amazonemr-arch}.'' All HDFS storage is reclaimed upon cluster termination though. EMRFS adds to existing HDFS functionality by allowing direct access to data in S3, treating S3 as an extension of HDFS. It allows for the usage of persistent data instead of the ephemeral storage provided by HDFS. The local file system in an EMR cluster refers to disks connected to each of the EC2 nodes in the cluster. All EC2 instances in a cluster come with pre-attached stored called an instance store, but this storage only exists as long as the instance is running~\cite{hid-sp18-521-amazonemr-arch}. 
 
-When modifying the example, please do not check in the images from the
-examples into your images directory as you will not need them for your
-paper. Instead use images that you like to include. If you do not have
-any images, do not palce anything in the images folder. However most
-technologies could benefit for one image. Make sure you do not
-plagiarize the image. Find out from the hand book how to do that. Any
-plagiarism of images will result that we return the paper without
-review as you have not understood how plagiarism works.
+The cluster resource management layer is where resources are managed and the scheduling of data processing jobs occurs. YARN, or Yet Another Resource Manager, is the default component used to handle these tasks in EMR because it can manage resources for a wide variety of the Apache Hadoop related data processing frameworks. The nodes in a cluster that administer YARN processes have an agent running of them that will track cluster health and talk directly with the EMR services~\cite{hid-sp18-521-amazonemr-arch}. 
 
-\section{Tables}
+\section{Frameworks and Applications}
 
-In case you need to create tables, you can do this with online tools
-(if you do not mind sharing your data) such as
-\url{https://www.tablesgenerator.com/} or other such tools (please
-google for them). They even allow you to manage tables as CSV.
+The data processing framework handles the analysis and processing of the data. A variety of these frameworks utilize YARN and others supply their own resource management software. When choosing a framework, the use cases of the data need to be considered, such as batch, in-memory or streaming data processing. The framework chosen then determines what additional languages and interfaces can be used within the application layer. Three popular frameworks that are supported on EMR are MapReduce, Spark and Tez~\cite{hid-sp18-521-amazonemr-arch}. 
 
-or generate them by hand while using the provided template in Table
-\ref{t:mytable}. Note that
-the caption is before the tabular environment.
+MapReduce is a programming model designed for distributed, parallel computing that helps simplify the creation of distributed applications by dealing with the logic, leaving the user to focus on the creation of Map and Reduce functions. Spark is additional data processing framework used for distributed data processing, the main difference being that it performs in-memory caching of data sets whereas MapReduce uses disks~\cite{hid-sp18-521-amazonemr-arch}. Input, output and intermediate data are all stored in-memory allowing Spark to perform faster processing without I/O costs. Using Spark on EMR within EMRFS allows direct access to data stored on S3~\cite{hid-sp18-521-amazonemr-spark}. Tez is a framework that can be used as an alternative to MapReduce and uses directed acyclic graphs (DAG), which Spark also uses, for its data processing. DAGs allow applications that use the data processing framework to determine the overall workflow of a job before it is executed. It contains all of the steps within that workflow so than an optimal plan can be decided upon before execution. DAGs also allow for caching of intermediate processing results in-memory. MapReduce has to store these intermediate results on disk which can add to processing overhead~\cite{hid-sp18-521-amazonemr-tez}. 
 
-\begin{table}[htb]
-\centering
-\caption{My caption}
-\label{t:mytabble}
-\begin{tabular}{lll}
-1 & 2 & 3 \\
-\toprule
-4 & 5 & 6 \\
-7 & 8 & 9
-\end{tabular}
-\end{table}
-
-\section{Quotes}
-
-Do not use double quotes \verb|"| but use \LaTeX\ ``quotes''. Quotes
-{\bf MUST} not be used to highlight works. Quotes are {\bf STRICTLY}
-used for quoting text from sources with citation following. If we find
-a quote that is not followed by a citation we will return the paper
-without review.
-
-\section{Labels}
-
-Do not use actual numbers in the taxt after you write for example
-Figure 1 use the ref for the figure while using its label. In our
-example it is Figure~\ref{f:fly} and Table Figure~\ref{t:mytabble}.
-See the source for the example.
-
-\section{Footnotes}
-
-Footnotes must be avoided in papers. All URLs must be included as full
-references and citations and used with the \verb|\cite| command
-\footnote{do not use footnotes}. You {\bf must} not use urls in the
-text or paper.
-
-\section{Plagiarism}
-
-The class includes a section about plagiarism which you must adhere
-to. Copying text without proper citation is considered cheating and we
-will assign the grade ``F'' for the paper if we find you do it. It is
-in your responsibility to make sure plagiarism does not occur. Please
-be aware that our checks are better than the once provided by turnitin
-or other online checkers. Excuses such as ``I did not have time'' or
-``I forgot'' can not apply as you have enough time to prepare the
-paper and must not forget. 
-
-\section{Check}
-
-make sure just as in previous assignments that you check your paper
-with chktex and lacheck. Fix the errors that you see. Some of the
-errors may be ok, but in general make sure you address all of them. If
-in doubt work with the TA. Simply use
-
-\begin{verbatim}
-make check
-\end{verbatim}
-
-We include in the handbook a list with common issues that we see when
-students submit papers. One particular important issue is not to use
-the underscore in bibtex labels. It is your responsibility to check
-the paper for the issues indicated.
-
-To check bibliographies simply use
-
-\begin{verbatim}
-pdflatex report
-bibtex report
-\end{verbatim}
-
-You will see the errors and warning son the screen address them
-
-TA's will in addition use a special test checking for additional
-format issues such as detecting if you used labels and refs for
-floats. You are welcome to also try this test, but we provide it
-without explanation as no explanation is needed since if you followed
-the instructions on floats there should be no issues. If you like to
-do that test, you can use  
-
-\begin{verbatim}
-make check-ta
-\end{verbatim}
-
-\section{Convenient Setup}
-
-If you do not have already a paper dir in your repository, here is a
-way to create one. Replace the hid-sp18-000 with your hid.
-
-\begin{verbatim}
-export HID=hid-sp18-000
-mkdir -p ~/github/cloudmesh-community
-cd ~/github/cloudmesh-community
-git clone https://github.com/cloudmesh-community/hid-sample.git
-git clone https://github.com/cloudmesh-community/$HID.git
-\end{verbatim}
-
-Next copy the paper example
-
-\begin{verbatim}
-cp -r hid-sample/paper $HID
-cd $HID
-git add paper
-git commit -m "add the paper directory" paper
-git push
-\end{verbatim}
-
-Make sure there is no \verb|/| behind the paper in the cp command or you mess up the
-copy process.
-
-
-\section{Creating the PDF}
-
-The PDF\ can be created simply with 
-
-\begin{verbatim}
-make clean
-\end{verbatim}
-
-
-
-{\bf UNDER NO CIRCUMSTANCES ARE YOU ALLOWED TO CHECK IN YOUR PDF OR
-  TEMPORARY LATEX FILES INTO GITHUB. GIT NEEDS TO STAY CLEAN AND ONLY
-  CONTAIN THE SOURCES.}
-
-We will deduct points if you do violate this.
+The final layer of EMR architecture is the applications layer. Applications residing on EMR can provide a variety of functionality depending on user needs such as allowing for the use of higher level programming languages with data processing, creation of streaming applications, machine learning and data warehouse implementation. Examples of applications that are supported include Flink, HBase, Hive, Mahout, MXNet, Pig, and Presto. Additional open source software is supported for applications that use their own cluster resource management layer instead of YARN. Other languages and libraries can be integrated into applications depending on the data processing framework. For example, MapReduce supports Java, Hive or Pig integration and Spark supports Spark SQL, Spark Steaming, MLib and GraphX~\cite{hid-sp18-521-amazonemr-arch}.  
 
 \section{Conclusion}
 
-Put here an conclusion. Conclusion and abstracts must not have any
-citations in the section.
+Amazon EMR offers a cloud computing solution to handle a wide array of big data related use cases. A general understanding of the architecture and platforms supported on EMR allows for a greater ability to properly architect a solution to meet user demands. Provisioning and supporting all of hardware needed to implement a solution can all be done within the cloud, freeing up users to focus more time on working with the data itself. Elasticity of the platform is a major benefit of EMR, allowing the hardware to scale up or down automatically to meet the needs of the data processing. The primary component of EMR is a cluster, which is a collection of EC2 instances, also called nodes, with each node being assigned a specific task within the cluster. Each cluster contains four levels of architecture that provides the layers of EMR functionality: storage, cluster resource management, data processing frameworks and applications and programs. Multiple options can be chosen when implementing each of these layers, allowing the creation of different solutions for multiple use cases. Understanding the options available within each of these layers can help determine which applications will later be available for use with the EMR cluster. A high-level understanding of the architecture and implementation could then be applied to help dig deeper into the technologies and applications supported on EMR, allowing users to develop highly customized cloud based EMR platforms than can handle many different data processing challenges that companies and institutions are faced with today. 
 
-
-\begin{acks}
-
-  The authors would like to thank Dr.~Gregor~von~Laszewski for his
-  support and suggestions to write this paper.
-
-\end{acks}
 
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{report} 
