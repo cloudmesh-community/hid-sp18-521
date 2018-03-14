@@ -7,7 +7,7 @@
     contact: 
       name: "Scott Steinbruegge"
   host: "localhost:8080"
-  basePath: "/cloudmesh/sql/hid-sp18-521"
+  basePath: "/cloudmesh/sql"
   schemes: 
     - "http"
   consumes: 

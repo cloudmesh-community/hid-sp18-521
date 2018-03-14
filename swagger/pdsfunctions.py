@@ -1,10 +1,10 @@
 import pymysql
 import config
 
-connection = pymysql.connect(host='iu.ct18adbzpbgv.us-east-1.rds.amazonaws.com',
+connection = pymysql.connect(host='iu-sp18.cgnrvgmckfic.us-east-1.rds.amazonaws.com',
                              user=config.user,
                              password=config.password,
-                             db='pds',
+                             db='I524',
                              charset='utf8mb4',
                              cursorclass=pymysql.cursors.DictCursor)
 
