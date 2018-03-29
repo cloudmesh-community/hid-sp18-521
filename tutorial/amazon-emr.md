@@ -2,7 +2,7 @@
 
 Scott Steinbruegge, hid-sp18-521
 
-##Introduction
+## Introduction
 
 Amazon EMR is a Hadoop framework that allows users to process data on
 the AWS platform using their EC2 technology to spread the load across
