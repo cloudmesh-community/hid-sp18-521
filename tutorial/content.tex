@@ -1,5 +1,6 @@
-{\Huge Amazon EMR Tutorial\par}
-{\Large Scott Steinbruegge, hid-sp18-521\par}
+\chapter{Huge Amazon EMR Tutorial}
+
+Scott Steinbruegge, hid-sp18-521
 
 \section{Introduction}
 
@@ -37,7 +38,9 @@ permissions. After those sections, a review page will be presented for your
 review and if you are satisfied with your selections, 
 click `Create bucket`~\cite{hid-sp18-521-s3bucket}. 
 
-\centering\includegraphics[width=\columnwidth]{../images/S3_create_bucket.png}
+\begin{center}
+\includegraphics[width=\columnwidth]{images/S3_create_bucket.png}
+\end{center}
 
 After the S3 bucket has been created, an EC2 key pair then needs to be 
 generated which allows you to connect to your EMR cluster over SSH. If you 
@@ -53,8 +56,10 @@ generated in a safe location for use later on as this is the only time you will
 be able to save this key file. It will need to be used when you need to launch 
 and connect to the EC2 instances created by EMR~\cite{hid-sp18-521-ec2keypair}. 
 
-\centering\includegraphics[width=\columnwidth]{../images/EMRkey.png}
- 
+\begin{center}
+\includegraphics[width=\columnwidth]{images/EMRkey.png}
+\end{center}
+
 \section{Configuring and Utilizing the Cluster with AWS Management Console}
 
 Once all the prerequisites above have been met, an EMR cluster can now be 
@@ -75,7 +80,9 @@ indefinitely. The step execution option would be used for when you want to
 execute a set of predefined steps upon cluster creation and once those steps 
 complete successfully, shut down the cluster~\cite{hid-sp18-521-emrlaunch}. 
 
-\centering\includegraphics[width=\columnwidth]{../images/emr_gen_config.png}
+\begin{center}
+\includegraphics[width=\columnwidth]{images/emr_gen_config.png}
+\end{center}
 
 Once launch mode is selected, scroll down to the `Software configuration' 
 section and choose an EMR release version. The most current version is 
@@ -97,9 +104,11 @@ has been selected, the cluster is then ready to be launched by selecting
 the `Create cluster' button at the bottom of the page. Your cluster will 
 then be launched and ready for workloads~\cite{hid-sp18-521-emrlaunch}. 
 
-\centering\includegraphics[width=\columnwidth]{../images/emr_software_config.png}
+\begin{center}
+\centering\includegraphics[width=\columnwidth]{images/emr_software_config.png}
 
-\centering\includegraphics[width=\columnwidth]{../images/emr_security.png}
+\centering\includegraphics[width=\columnwidth]{images/emr_security.png}
+\end{center}
 
 If you`ve selected cluster launch mode, ad-hoc processing of data can now 
 occur on cluster. To get started go to the EMR console page. From here you can 
@@ -119,11 +128,13 @@ run the step on the cluster. This process can be repeated as needed and there
 are additional ways to submit up to 256 active steps that can be explored but 
 is beyond the scope of this tutorial~\cite{hid-sp18-521-emrprocess}.  
 
-\centering\includegraphics[width=\columnwidth]{../images/emr_cluster_create.png}
+\begin{center}
+\centering\includegraphics[width=\columnwidth]{images/emr_cluster_create.png}
 
-\centering\includegraphics[width=\columnwidth]{../images/emr_cluster_steps.png}
+\centering\includegraphics[width=\columnwidth]{images/emr_cluster_steps.png}
 
-\centering\includegraphics[width=\columnwidth]{../images/emr_cluster_steps2.png}
+\centering\includegraphics[width=\columnwidth]{images/emr_cluster_steps2.png}
+\end{center}
 
 \section{Teardown}
 
@@ -150,11 +161,8 @@ all buckets created during the tutorial have been deleted, you can then be
 certain that no additional costs will continue to accrue based on the work 
 performed in this tutorial~\cite{hid-sp18-521-emrreset}.  
 
+\begin{center}
+\includegraphics[width=\columnwidth]{images/emr_terminate.png}
 
-\centering\includegraphics[width=\columnwidth]{../images/emr_terminate.png}
-
-\centering\includegraphics[width=\columnwidth]{../images/s3_delete_bucket.png}
-
-\bibliographystyle{ACM-Reference-Format}
-\bibliography{report} 
-
+\includegraphics[width=\columnwidth]{images/s3_delete_bucket.png}
+\end{center}
