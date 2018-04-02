@@ -6,3 +6,7 @@ clean:
 	cd paper; rm -rf *~ *.aux *.bbl *.dvi *.log *.out *.blg *.pdf *.toc *.fdb_latexmk *.fls *.fff *.lof *.lot *.ttt *.cut *bcf *idx *run.xml
 	cd project-paper; rm -rf *~ *.aux *.bbl *.dvi *.log *.out *.blg *.pdf *.toc *.fdb_latexmk *.fls *.fff *.lof *.lot *.ttt *.cut *bcf *idx *run.xml
 	cd technology; rm -rf *~ *.aux *.bbl *.dvi *.log *.out *.blg *.pdf *.toc *.fdb_latexmk *.fls *.fff *.lof *.lot *.ttt *.cut *bcf *idx *run.xml
+
+check:
+	chktex -q -n 13 -n 8 content.tex
+
