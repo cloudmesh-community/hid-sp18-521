@@ -18,30 +18,54 @@
 
 
 \begin{abstract}
-Amazon Web Services provides a wide variety of database and data analysis
- services that allow a user to immediately start working on interpreting 
-their data instead of trying to obtain or provision their own hardware 
-beforehand. Using a data set that contains Medicare hospital comparison 
-information, we will showcase how REST APIs can be used to directly interact 
-with multiple AWS services that are used specifically for database or data 
-analysis use cases. While there are multiple methods AWS supplies to interact 
-with their services, we will be using the AWS Python SDK called 
-Boto~\cite{hid-sp18-521-boto} in order to be able to work programmatically 
-with the Amazon APIs exposed by each of their services so calls to them can 
-then be made directly from our own REST APIs we develop. We will start with 
-presenting how to get raw data onto the AWS platform and landing that data 
-in S3 for use by other AWS services and then work our way up to newer, more 
-advanced services such as SageMaker which is a machine learning service. 
-Along the way we will provide explanations and hands on coding examples 
-for each service we work with in order to gain insight into how to 
-effectively interact with AWS while performing data analysis or other data 
-related tasks. 
+Amazon Web Services provides a wide variety of database and data analysis 
+services that allow a user to immediately start working on interpreting their 
+data instead of trying to obtain or provision their own hardware beforehand. 
+Using a data set that contains Medicare hospital comparison information, we 
+showcase how REST APIs can be used to directly interact with multiple AWS 
+services that are used specifically for database or data analysis use cases. 
+While there are multiple methods AWS supplies to interact with their services, 
+the AWS Python SDK called Boto is used here in order to be able to work 
+programmatically with the Amazon APIs exposed by each of their services so 
+calls to them can then be made directly from our own REST APIs we develop. We 
+start with presenting how to get raw data onto the AWS platform and landing 
+that data in S3 for use by other AWS services and then work our way up to 
+newer, more advanced services such as SageMaker which is a machine learning 
+service. Along the way we provide explanations and hands on coding examples 
+for each service in order to gain insight into how to effectively interact 
+with AWS while performing data analysis or other data related tasks. 
 \end{abstract}
 
 \keywords{hid-sp18-521, Amazon, AWS, REST API}
 
 
 \maketitle
+
+\section{Interacting With AWS Services}
+
+Between the AWS Management Console, SDKs (software development kits) and AWS 
+CLI (command line interface), AWS provides multiple ways to interact with 
+their services. While some of the work we perform is done through the 
+Management Console, the majority of it is performed by the Python SDK for AWS 
+named Boto. Using one of the AWS SDKs allows developers to be able to write 
+their own software that interacts directly with AWS services through their own 
+set of APIs. There are two levels of APIs that AWS provides, resource APIs and 
+client APIs. The resource APIs provide an object-oriented interface to the 
+services which expose multiple attributes and methods per service at a higher 
+level than the lower level client API calls~\cite{hid-sp18-521-BotoResources}. 
+Client APIs, also called low-level APIs, provide methods that map one-to-one 
+with the service APIs. No level of abstraction is provided by the client 
+APIs, the developer needs to explicitly provide all information about the 
+targeted resource for every client API call~\cite{hid-sp18-521-BotoClients}. 
+When available, the resource APIs are preferred since they abstract the 
+majority of the backend details away from the developer and they can focus on 
+interacting directly with the service using the necessary parameters. Boto 
+also provides the ability to use waiters, which allow for polling the status 
+of specific AWS resources within your code. An example of when a waiter could 
+be used is when you run code trying to provision a new resource and moving 
+onto the next step cannot be done until that new resource has been setup 
+successfully. Using the waiter would allow your code to continuously poll the 
+status of that dependent service~\cite{hid-sp18-521-pythonsdk}.
 
 
 \bibliographystyle{ACM-Reference-Format}
