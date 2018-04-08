@@ -3,6 +3,22 @@ mysql_user_password = 'Password123'
 
 '''
 
+maybe also make config a dict e.g. use yaml
+
+so you have
+
+cloudmesh:
+   mysql:
+      user: 
+         name: TBD
+         password: TBD
+         
+config = read in your config yam
+
+password = config['cloudmesh']['mysql']['user']['password'] 
+username = config['cloudmesh']['mysql']['user']['name'] 
+
+
 pseudo code suggested by gregor
 
 if there is no file at ~/.cloudmesh/tbd-config.yaml
