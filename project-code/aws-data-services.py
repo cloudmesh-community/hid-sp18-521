@@ -1,4 +1,4 @@
-import boto3, smart_open, pprint, pymysql, config
+import boto3, smart_open, pprint, pymysql, config, urllib, json, decimal
 
 # AWS credentials stored in ~/.aws/credentials, connect using IAM user
 # S3 bucket name = hid-sp18-521
@@ -7,13 +7,15 @@ import boto3, smart_open, pprint, pymysql, config
 def medicare_patient_survey_data_csv_to_s3():
     with smart_open.smart_open('s3://hid-sp18-521/PatientSurveyData.csv', 'wb') as fout:
         for line in smart_open.smart_open('https://data.medicare.gov/resource/rmgi-5fhi.csv'):
-            fout.write(line + '\n')
+            response = fout.write(line + '\n')
+            return response
 
 # Pulls Medicare patient survey data set in JSON format directly from their web site into an S3 bucket
 def medicare_patient_survey_data_json_to_s3():
     with smart_open.smart_open('s3://hid-sp18-521/PatientSurveyData.json', 'wb') as fout:
         for line in smart_open.smart_open('https://data.medicare.gov/resource/rmgi-5fhi.json'):
-            fout.write(line + '\n')
+            response = fout.write(line + '\n')
+            return response
 
 # Pulls a list of all of the files that exist in the bucket this application uses
 def s3_bucket_allfiles():
@@ -31,7 +33,9 @@ def s3_bucket_allfiles():
 def data_pipeline_s3_to_rds():
     pipeline = boto3.client('datapipeline', region_name='us-east-1')
 
-    return pipeline.activate_pipeline(pipelineId='df-09855991V8LTRRRNJOQW')
+    response = pipeline.activate_pipeline(pipelineId='df-09855991V8LTRRRNJOQW')
+
+    return response
 
 # Return the runtime status of the S3 to RDS data pipelines
 def data_pipeline_s3_to_rds_status():
@@ -63,13 +67,42 @@ def query_mysql_data():
 def dynamodb_delete_table():
     dynamodb = boto3.client('dynamodb', region_name='us-east-1')
 
-    return dynamodb.delete_table(TableName='PatientSurveyData')
+    response = dynamodb.delete_table(TableName='PatientSurveyData')
+
+    return response
 
 def dynamodb_create_table():
     dynamodb = boto3.client('dynamodb', region_name='us-east-1')
-    table = dynamodb.create_table(TableName='PatientSurveyData',
+    response = dynamodb.create_table(TableName='PatientSurveyData',
                                   KeySchema=[{'AttributeName': 'provider_id', 'KeyType': 'HASH'}, ],
                                   AttributeDefinitions=[{'AttributeName': 'provider_id', 'AttributeType': 'S'}],
                                   ProvisionedThroughput={'ReadCapacityUnits': 5, 'WriteCapacityUnits': 5},
                                   )
-    return table
+    return response
+
+#Import JSON file from web and into DynamoDB table
+def dynamodb_insert_json_file():
+    dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+
+    table = dynamodb.Table('PatientSurveyData')
+
+    url = "https://data.medicare.gov/resource/rmgi-5fhi.json"
+    response = urllib.urlopen(url)
+    data = json.loads(response.read(), parse_float=decimal.Decimal)
+
+    for row in data:
+        response = table.put_item(Item=row)
+
+    return response
+
+def dynamodb_query_data():
+    dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+
+    table = dynamodb.Table('PatientSurveyData')
+
+    query = table.get_item(Key={'provider_id': '450644'})
+
+    return query
+
+
+
