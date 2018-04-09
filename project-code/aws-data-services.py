@@ -1,9 +1,12 @@
-import boto3, smart_open, pprint, pymysql, config, urllib, json, decimal
+import boto3, smart_open, pprint, pymysql, config, urllib, json, decimal, psycopg2
+from boto3.dynamodb.conditions import Key, Attr
 
 # AWS credentials stored in ~/.aws/credentials, connect using IAM user
 # S3 bucket name = hid-sp18-521
 
-# Pulls Medicare patient survey data set in CSV format directly from their web site into an S3 bucket
+# https://data.medicare.gov/Hospital-Compare/Patient-survey-HCAHPS-Hospital/dgck-syfz
+
+# Pulls Medicare hospital survey data set in CSV format directly from their web site into an S3 bucket
 def medicare_patient_survey_data_csv_to_s3():
     with smart_open.smart_open('s3://hid-sp18-521/PatientSurveyData.csv', 'wb') as fout:
         for line in smart_open.smart_open('https://data.medicare.gov/resource/rmgi-5fhi.csv'):
@@ -59,11 +62,12 @@ def query_mysql_data():
     cursorclass=pymysql.cursors.DictCursor)
 
     cursor = connection.cursor()
-    sql = "SELECT * FROM PatientSurveyData"
+    sql = "SELECT * FROM PatientSurveyData" #TODO: Change this to something useful
     cursor.execute(sql)
     result = cursor.fetchall()
     return result
 
+# Delete the DynamoDB table PatientSurveyData
 def dynamodb_delete_table():
     dynamodb = boto3.client('dynamodb', region_name='us-east-1')
 
@@ -71,6 +75,7 @@ def dynamodb_delete_table():
 
     return response
 
+# Create the DynamoDB table PatientSurveyData
 def dynamodb_create_table():
     dynamodb = boto3.client('dynamodb', region_name='us-east-1')
     response = dynamodb.create_table(TableName='PatientSurveyData',
@@ -95,14 +100,28 @@ def dynamodb_insert_json_file():
 
     return response
 
+# Query the data set we just inserted into DymamoDB (Get all hospitals from the survey located in Missouri)
 def dynamodb_query_data():
     dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 
     table = dynamodb.Table('PatientSurveyData')
 
-    query = table.get_item(Key={'provider_id': '450644'})
+    response = table.scan(FilterExpression=Attr('state').eq('MO'))
 
-    return query
+    items = response['Items']
 
+    return items
+
+# IN PROGRESS: Import CSV data into Redshift cluster (created in Management Console and SQL Workbench J)
+redshift = psycopg2.connect(dbname= 'i524', host='iu-sp18.c9tuimcojmsj.us-east-1.redshift.amazonaws.com',
+                            port= '5439', user= 'IUuser', password= 'Password123')
+
+cur = redshift.cursor()
+
+cur.execute("SELECT * FROM PatientSurveyData")
+
+cur.fetchall()
+cur.close()
+redshift.close()
 
 
