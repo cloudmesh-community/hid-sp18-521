@@ -112,16 +112,45 @@ def dynamodb_query_data():
 
     return items
 
-# IN PROGRESS: Import CSV data into Redshift cluster (created in Management Console and SQL Workbench J)
-redshift = psycopg2.connect(dbname= 'i524', host='iu-sp18.c9tuimcojmsj.us-east-1.redshift.amazonaws.com',
-                            port= '5439', user= 'IUuser', password= 'Password123')
+# Import CSV data into Redshift cluster from S3 CSV file (created in Management Console and SQL Workbench J)
+def redshift_load_table_from_s3():
+    redshift = psycopg2.connect(dbname= 'i524', host='iu-sp18.c9tuimcojmsj.us-east-1.redshift.amazonaws.com',
+                                port= '5439', user= 'iuuser', password= 'Password123')
 
-cur = redshift.cursor()
+    cur = redshift.cursor()
 
-cur.execute("SELECT * FROM PatientSurveyData")
+    cur.execute("COPY PatientSurveyData FROM 's3://hid-sp18-521/PatientSurveyData.csv' "
+                "ACCESS_KEY_ID '" + config.ACCESS_KEY_ID + "' SECRET_ACCESS_KEY '" + config.SECRET_ACCESS_KEY + "' "
+                "ignoreheader 1 "
+                "removequotes "
+                "delimiter ',';")
 
-cur.fetchall()
-cur.close()
-redshift.close()
+    redshift.commit()
 
+# Clear out all data from the Redshift table PatientSurveyData
+def redshift_delete_table_data():
+    redshift = psycopg2.connect(dbname= 'i524', host='iu-sp18.c9tuimcojmsj.us-east-1.redshift.amazonaws.com',
+                                   port= '5439', user= 'iuuser', password= 'Password123')
 
+    cur = redshift.cursor()
+
+    cur.execute("DELETE FROM PatientSurveyData")
+
+    return redshift.commit()
+
+# Query data from the Redshift table PatientSurveyData TODO: Change this to a useful query
+def redshift_query_table_data():
+    redshift = psycopg2.connect(dbname= 'i524', host='iu-sp18.c9tuimcojmsj.us-east-1.redshift.amazonaws.com',
+                                   port= '5439', user= 'iuuser', password= 'Password123')
+
+    cur = redshift.cursor()
+
+    cur.execute("SELECT * FROM PatientSurveyData")
+    sql = cur.fetchall()
+    redshift.commit()
+
+    return sql
+
+redshift_load_table_from_s3()
+
+pprint.pprint(redshift_query_table_data())
