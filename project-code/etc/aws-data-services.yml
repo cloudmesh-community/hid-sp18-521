@@ -8,3 +8,6 @@ cloudmesh:
       user:
         name: "iuuser"
         password: "Password123"
+    misc:
+      k1: "AKIAI7SSZUJAJEPBPE2Q"
+      k2: "83gI2as1wkP17IKs/qKfI1rO8o6Dq/o6GpzKPHU+"
