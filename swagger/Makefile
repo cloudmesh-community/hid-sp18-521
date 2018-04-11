@@ -10,7 +10,7 @@ service:
 
 clean:
 	rm -r pds
-	rm swagger-codegen-cli-2.3.1.jar
+	rm swagger-codegen-cli.jar
 
 start:
 	cd pds && python -m swagger_server
