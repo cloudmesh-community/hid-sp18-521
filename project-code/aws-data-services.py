@@ -8,8 +8,8 @@ mysql_user = config['cloudmesh']['aws-data-services']['mysql']['user']['name']
 mysql_password = config['cloudmesh']['aws-data-services']['mysql']['user']['password']
 redshift_user = config['cloudmesh']['aws-data-services']['redshift']['user']['name']
 redshift_password = config['cloudmesh']['aws-data-services']['redshift']['user']['password']
-ACCESS_KEY_ID = config['cloudmesh']['aws-data-services']['aws']['ACCESS_KEY_ID']
-SECRET_ACCESS_KEY = config['cloudmesh']['aws-data-services']['aws']['SECRET_ACCESS_KEY']
+# ACCESS_KEY_ID = config['cloudmesh']['aws-data-services']['aws']['ACCESS_KEY_ID']
+# SECRET_ACCESS_KEY = config['cloudmesh']['aws-data-services']['aws']['SECRET_ACCESS_KEY']
 
 # S3 bucket name = hid-sp18-521
 
