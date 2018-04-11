@@ -29,6 +29,9 @@ container:
 	docker build -t cloudmesh-sql .
 	docker create cloudmesh-sql
 
+container_start:
+	docker start cloudmesh-sql 
+
 	
 	
 
