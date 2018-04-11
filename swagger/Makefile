@@ -30,7 +30,7 @@ container:
 	docker create cloudmesh-sql
 
 container_start:
-	docker start cloudmesh-sql 
+	docker run cloudmesh-sql 
 
 	
 	
