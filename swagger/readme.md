@@ -9,7 +9,7 @@ This folder contains the files necessary to create and deploy a server side REST
     cd hid-sp18-521/swagger
     ```
 3. Additional steps can then be performed by excuting the Makefile using the usage parameters below:
-    -  Installing the sevice
+    -  Installing the sevice and dependencies
         ```sh
         make service
         ```
