@@ -1,8 +1,7 @@
-SWAGGER-CODEGEN=java -jar swagger-codegen-cli.jar	
-
 service:
 	mkdir pds
-	$(SWAGGER-CODEGEN) generate -i sql-aws.yml -l python-flask -o pds -D supportPython2=true
+	wget https://oss.sonatype.org/content/repositories/releases/io/swagger/swagger-codegen-cli/2.3.1/swagger-codegen-cli-2.3.1.jar
+	java -jar swagger-codegen-cli-2.3.1.jar generate -i sql-aws.yml -l python-flask -o pds -D supportPython2=true
 	cp pdsfunctions.py pds/swagger_server/controllers
 	cp config.py pds/swagger_server/controllers
 	cp default_controller.py pds/swagger_server/controllers
@@ -10,6 +9,7 @@ service:
 
 clean:
 	rm -r pds
+	rm swagger-codegen-cli-2.3.1.jar
 
 start:
 	cd pds && python -m swagger_server
