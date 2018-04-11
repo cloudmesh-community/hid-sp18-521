@@ -29,11 +29,11 @@ This folder contains the files necessary to create and deploy a server side REST
         ```sh
         make test
         ```
-    -  Create a Docker image and container using Dockerfile:
+    -  Create a Docker image and container named cloudmesh-sql using Dockerfile:
         ```sh
         make container
         ```
-4. Once the Docker image and container have been created, you can start the container using the following command:
+    -  Run the Docker container named cloudmesh-sql:
         ```sh
-        docker start cloudmesh-sql
+        make container_start
         ```
