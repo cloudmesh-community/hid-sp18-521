@@ -8,6 +8,3 @@ cloudmesh:
       user:
         name: "iuuser"
         password: "Password123"
-    aws:
-      ACCESS_KEY_ID: "AKIAIHU7MHYUPJLSCUMQ"
-      SECRET_ACCESS_KEY: "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"
