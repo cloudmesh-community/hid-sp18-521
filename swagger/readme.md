@@ -33,3 +33,7 @@ This folder contains the files necessary to create and deploy a server side REST
         ```sh
         make container
         ```
+4. Once the Docker image and container have been created, you can start the container using the following command:
+        ```sh
+        docker start cloudmesh-sql
+        ```
