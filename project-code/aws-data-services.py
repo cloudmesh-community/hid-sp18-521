@@ -35,7 +35,7 @@ def medicare_patient_survey_data_json_to_s3():
 def s3_bucket_allfiles():
     file_names = []
 
-    s3 = boto3.resource('s3', aws_access_key_id=k1, aws_secret_access_key=k2)
+    s3 = boto3.resource('s3', region_name='us-east-1', aws_access_key_id=k1, aws_secret_access_key=k2)
     bucket = s3.Bucket('hid-sp18-521')
 
     for object in bucket.objects.all():
@@ -45,7 +45,7 @@ def s3_bucket_allfiles():
 
 # Import S3 File into RDS using AWS Data Pipeline (show how it was created and how it can be called from here)
 def data_pipeline_s3_to_rds():
-    pipeline = boto3.client('datapipeline', aws_access_key_id=k1, aws_secret_access_key=k2)
+    pipeline = boto3.client('datapipeline', region_name='us-east-1', aws_access_key_id=k1, aws_secret_access_key=k2)
 
     response = pipeline.activate_pipeline(pipelineId='df-09855991V8LTRRRNJOQW')
 
@@ -53,7 +53,7 @@ def data_pipeline_s3_to_rds():
 
 # Return the runtime status of the S3 to RDS data pipelines
 def data_pipeline_s3_to_rds_status():
-    pipeline = boto3.client('datapipeline', aws_access_key_id=k1, aws_secret_access_key=k2)
+    pipeline = boto3.client('datapipeline', region_name='us-east-1', aws_access_key_id=k1, aws_secret_access_key=k2)
 
     pipeline_status = pipeline.describe_pipelines(pipelineIds=['df-09855991V8LTRRRNJOQW'])
 
@@ -64,7 +64,7 @@ def data_pipeline_s3_to_rds_status():
             return field['stringValue']
 
 # Query the table that contains the data we imported into MySQL on RDS from S3
-def query_mysql_data():
+def query_mysql_data(starRating):
     connection = pymysql.connect(host='iu-sp18.cgnrvgmckfic.us-east-1.rds.amazonaws.com',
                                  user=mysql_user,
                                  password=mysql_password,
@@ -73,14 +73,14 @@ def query_mysql_data():
     cursorclass=pymysql.cursors.DictCursor)
 
     cursor = connection.cursor()
-    sql = "SELECT * FROM PatientSurveyData" #TODO: Change this to something useful
-    cursor.execute(sql)
+    sql = "SELECT * FROM PatientSurveyData WHERE patient_survey_star_rating = %s"
+    cursor.execute(sql, (starRating))
     result = cursor.fetchall()
     return result
 
 # Delete the DynamoDB table PatientSurveyData
 def dynamodb_delete_table():
-    dynamodb = boto3.client('dynamodb', aws_access_key_id=k1, aws_secret_access_key=k2)
+    dynamodb = boto3.client('dynamodb', region_name='us-east-1', aws_access_key_id=k1, aws_secret_access_key=k2)
 
     response = dynamodb.delete_table(TableName='PatientSurveyData')
 
@@ -88,7 +88,7 @@ def dynamodb_delete_table():
 
 # Create the DynamoDB table PatientSurveyData
 def dynamodb_create_table():
-    dynamodb = boto3.client('dynamodb', aws_access_key_id=k1, aws_secret_access_key=k2)
+    dynamodb = boto3.client('dynamodb', region_name='us-east-1', aws_access_key_id=k1, aws_secret_access_key=k2)
     response = dynamodb.create_table(TableName='PatientSurveyData',
                                   KeySchema=[{'AttributeName': 'provider_id', 'KeyType': 'HASH'}, ],
                                   AttributeDefinitions=[{'AttributeName': 'provider_id', 'AttributeType': 'S'}],
@@ -96,9 +96,9 @@ def dynamodb_create_table():
                                   )
     return response
 
-#Import JSON file from web and into DynamoDB table
+#Import JSON file from web and into DynamoDB table (wait a minute until the table is created)
 def dynamodb_insert_json_file():
-    dynamodb = boto3.resource('dynamodb', aws_access_key_id=k1, aws_secret_access_key=k2)
+    dynamodb = boto3.resource('dynamodb', region_name='us-east-1', aws_access_key_id=k1, aws_secret_access_key=k2)
 
     table = dynamodb.Table('PatientSurveyData')
 
@@ -113,7 +113,7 @@ def dynamodb_insert_json_file():
 
 # Query the data set we just inserted into DymamoDB (Get all hospitals from the survey located in Missouri)
 def dynamodb_query_data():
-    dynamodb = boto3.resource('dynamodb', aws_access_key_id=k1, aws_secret_access_key=k2)
+    dynamodb = boto3.resource('dynamodb', region_name='us-east-1', aws_access_key_id=k1, aws_secret_access_key=k2)
 
     table = dynamodb.Table('PatientSurveyData')
 
@@ -136,7 +136,7 @@ def redshift_load_table_from_s3():
                 "removequotes "
                 "delimiter ',';")
 
-    redshift.commit()
+    return redshift.commit()
 
 # Clear out all data from the Redshift table PatientSurveyData
 def redshift_delete_table_data():
@@ -161,3 +161,81 @@ def redshift_query_table_data():
     redshift.commit()
 
     return sql
+
+def athena_create_database():
+    athena = boto3.client('athena', region_name='us-east-1', aws_access_key_id=k1, aws_secret_access_key=k2)
+
+    response = athena.start_query_execution(
+            QueryString='CREATE DATABASE IF NOT EXISTS i524',
+            QueryExecutionContext={'Database': 'default'}, ResultConfiguration={'OutputLocation': 's3://hid-sp18-521/athena-output'})
+
+    return response
+
+def athena_create_table():
+    athena = boto3.client('athena', region_name='us-east-1', aws_access_key_id=k1, aws_secret_access_key=k2)
+
+    response = athena.start_query_execution(
+        QueryString="""CREATE EXTERNAL TABLE IF NOT EXISTS i524.PatientSurveyData (
+                    computed_region_csmy_5jwy string,	
+                    computed_region_f3tr_pr43 string,
+                    computed_region_nwen_78xc string,
+                    address string,
+                    city string,
+                    county_name string,
+                    hcahps_answer_description string,
+                    hcahps_answer_percent string,
+                    hcahps_answer_percent_footnote string,
+                    hcahps_linear_mean_value string,
+                    hcahps_measure_id string,
+                    hcahps_question string,
+                    hospital_name string,
+                    location string,
+                    location_address string,
+                    location_city string,
+                    location_state string,
+                    location_zip string,
+                    measure_end_date string,
+                    measure_start_date string,
+                    number_of_completed_surveys string,
+                    number_of_completed_surveys_footnote string,
+                    patient_survey_star_rating string,
+                    patient_survey_star_rating_footnote	string,
+                    phone_number string,
+                    phone_number_type string,
+                    provider_id	string,
+                    state string,
+                    survey_response_rate_percent string,
+                    survey_response_rate_percent_footnote string,
+                    zip_code string
+         )
+         ROW FORMAT SERDE 'org.openx.data.jsonserde.JsonSerDe'
+         WITH SERDEPROPERTIES (
+         'serialization.format' = '1'
+         ) LOCATION 's3://hid-sp18-521/'
+         TBLPROPERTIES ('has_encrypted_data'='false');""",
+        QueryExecutionContext={'Database': 'i524'}, ResultConfiguration={'OutputLocation': 's3://hid-sp18-521/athena-output'})
+
+    return response
+
+def athena_drop_table():
+    athena = boto3.client('athena', region_name='us-east-1', aws_access_key_id=k1, aws_secret_access_key=k2)
+
+    response = athena.start_query_execution(
+        QueryString="DROP TABLE IF EXISTS PatientSurveyData",
+        QueryExecutionContext={'Database': 'i524'}, ResultConfiguration={'OutputLocation': 's3://hid-sp18-521/athena-output'})
+
+    return response
+
+def athena_query_table(city):
+    athena = boto3.client('athena', region_name='us-east-1', aws_access_key_id=k1, aws_secret_access_key=k2)
+
+    query = 'SELECT * FROM PatientSurveyData WHERE City = %s' % (city)
+
+    response = athena.start_query_execution(
+        QueryString=query,
+        QueryExecutionContext={'Database': 'i524'}, ResultConfiguration={'OutputLocation': 's3://hid-sp18-521/athena-output'})
+
+    return response
+
+
+
