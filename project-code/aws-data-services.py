@@ -1,7 +1,11 @@
 import boto3, smart_open, pprint, pymysql, urllib, json, decimal, psycopg2, yaml
 from boto3.dynamodb.conditions import Key, Attr
 
-with open ("etc/aws-data-services.yml", 'r') as ymlfile:
+# TODO:
+# Change this to use the path ~/.cloudmesh/configuration-<service>.yaml
+# Add steps to the Makefile setup to copy my config file to this path
+
+with open ("etc/configuration/aws-data-services.yml", 'r') as ymlfile:
     config = yaml.load(ymlfile)
 
 mysql_user = config['cloudmesh']['aws-data-services']['mysql']['user']['name']
