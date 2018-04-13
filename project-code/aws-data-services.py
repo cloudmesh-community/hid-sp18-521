@@ -5,7 +5,7 @@ from boto3.dynamodb.conditions import Key, Attr
 # Change this to use the path ~/.cloudmesh/configuration-<service>.yaml
 # Add steps to the Makefile setup to copy my config file to this path
 
-with open ("etc/configuration/aws-data-services.yml", 'r') as ymlfile:
+with open ("etc/configuration-aws-data-services.yml", 'r') as ymlfile:
     config = yaml.load(ymlfile)
 
 mysql_user = config['cloudmesh']['aws-data-services']['mysql']['user']['name']
@@ -25,8 +25,6 @@ def medicare_patient_survey_data_csv_to_s3():
         for line in smart_open.smart_open('https://data.medicare.gov/resource/rmgi-5fhi.csv'):
             response = fout.write(line + '\n')
             return response
-
-medicare_patient_survey_data_csv_to_s3()
 
 # Pulls Medicare patient survey data set in JSON format directly from their web site into an S3 bucket
 def medicare_patient_survey_data_json_to_s3():
