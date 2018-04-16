@@ -1,0 +1,95 @@
+---
+  swagger: "2.0"
+  info: 
+    version: "1.0.0"
+    title: "Interacting with AWS Data Services"
+    description: "An API that shows how to interact with various AWS data services using the Python SDK for AWS called boto"
+    contact: 
+      name: "Scott Steinbruegge"
+  host: "localhost:8080"
+  basePath: "/cloudmesh/aws-data-services"
+  schemes: 
+    - "http"
+  consumes: 
+    - "application/json"
+  produces: 
+    - "application/json"
+  paths: 
+    /csv-to-s3: 
+      put: 
+        description: "Copies the Medicare data set used in CSV format for this project directly from web to an S3 bucket."
+        operationId: "copyCSVtoS3"
+        responses: 
+          200:
+            description: "Successfully copied Medicare CSV file from web to S3 bucket named hid-sp18-521."
+          400:
+            $ref: '#/responses/400Error'
+    /json-to-s3: 
+      put: 
+        description: "Copies the Medicare data set used in JSON format for this project directly from web to an S3 bucket."
+        operationId: "copyJSONtoS3"
+        responses: 
+          200:
+            description: "Successfully copied Medicare JSON file from web to S3 bucket named hid-sp18-521."
+          400:
+            $ref: '#/responses/400Error'
+    /s3-files: 
+      get: 
+        description: "Returns the list of all files stored in the S3 bucket hid-sp18-521."
+        operationId: "getS3FileNames"
+        responses: 
+          200:
+            description: "List of all files stored in the S3 bucket hid-sp18-521."
+            schema: 
+              type: "array"
+              items:
+                $ref: "#/definitions/S3FileNames"
+          400:
+            $ref: '#/responses/400Error'
+    /data-pipeline-s3-to-rds: 
+      put: 
+        description: "Starts the AWS Data Pipeline job to import the raw Medicare data file from S3 into a mySQL database running on Amazon RDS."
+        operationId: "insertPatientSurveyData-s3toRDS"
+        responses: 
+          200:
+            description: "Successfully started Data Pipeline job ID df-09855991V8LTRRRNJOQW."
+          400:
+            $ref: '#/responses/400Error'
+    /data-pipeline-s3-to-rds-status: 
+      get: 
+        description: "Returns the list of all files stored in the S3 bucket hid-sp18-521."
+        operationId: "getStatusInsertPatientSurveyData-s3toRDS"
+        responses: 
+          200:
+            description: "Returns the runtime status of the  WS Data Pipeline job to import the raw Medicare data file from S3 into a mySQL database running on Amazon RDS."
+            schema: 
+              type: "array"
+              items:
+                $ref: "#/definitions/DataPipelineStatus"
+          400:
+            $ref: '#/responses/400Error'
+
+  definitions: 
+    S3FileNames: 
+      type: "object"
+      properties: 
+        filename: 
+          type: "string"
+    DataPipelineStatus:
+      type: "object"
+      properties:
+        run_status:
+          type: "string"
+
+  responses:
+    400Error:
+      description: Invalid request
+      schema:
+        type: object 
+        properties:
+          message:
+            type: string
+      
+          
+        
+          

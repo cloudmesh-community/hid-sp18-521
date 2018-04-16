@@ -1,12 +1,10 @@
 import boto3, smart_open, pprint, pymysql, urllib, json, decimal, psycopg2, yaml, os
 from boto3.dynamodb.conditions import Key, Attr
 
-# Add code here to copy config file if it doesn't exist yet
-# AND Add steps to the Makefile setup to copy my config file to this path
+# Add steps to the Makefile setup to copy my config file to this path
 
-if os.path.exists(os.path.expanduser("~/.cloudmesh/configuration-aws-data-services.yml")):
-    with open(os.path.expanduser("~/.cloudmesh/configuration-aws-data-services.yml"), 'r') as ymlfile:
-        config = yaml.load(ymlfile)
+with open(os.path.expanduser("~/.cloudmesh/configuration-aws-data-services.yml"), 'r') as ymlfile:
+    config = yaml.load(ymlfile)
 
 mysql_user = config['cloudmesh']['aws-data-services']['mysql']['user']['name']
 mysql_password = config['cloudmesh']['aws-data-services']['mysql']['user']['password']
