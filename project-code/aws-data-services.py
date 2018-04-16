@@ -1,12 +1,12 @@
-import boto3, smart_open, pprint, pymysql, urllib, json, decimal, psycopg2, yaml
+import boto3, smart_open, pprint, pymysql, urllib, json, decimal, psycopg2, yaml, os
 from boto3.dynamodb.conditions import Key, Attr
 
-# TODO:
-# Change this to use the path ~/.cloudmesh/configuration-<service>.yaml
-# Add steps to the Makefile setup to copy my config file to this path
+# Add code here to copy config file if it doesn't exist yet
+# AND Add steps to the Makefile setup to copy my config file to this path
 
-with open ("etc/configuration-aws-data-services.yml", 'r') as ymlfile:
-    config = yaml.load(ymlfile)
+if os.path.exists(os.path.expanduser("~/.cloudmesh/configuration-aws-data-services.yml")):
+    with open(os.path.expanduser("~/.cloudmesh/configuration-aws-data-services.yml"), 'r') as ymlfile:
+        config = yaml.load(ymlfile)
 
 mysql_user = config['cloudmesh']['aws-data-services']['mysql']['user']['name']
 mysql_password = config['cloudmesh']['aws-data-services']['mysql']['user']['password']
@@ -151,14 +151,16 @@ def redshift_delete_table_data():
 
     return redshift.commit()
 
-# Query data from the Redshift table PatientSurveyData TODO: Change this to a useful query
+# Query data from the Redshift table PatientSurveyData
 def redshift_query_table_data():
     redshift = psycopg2.connect(dbname= 'i524', host='iu-sp18.c9tuimcojmsj.us-east-1.redshift.amazonaws.com',
                                    port= '5439', user= redshift_user, password= redshift_password)
 
     cur = redshift.cursor()
 
-    cur.execute("SELECT * FROM PatientSurveyData")
+    cur.execute("select location_state, avg(patient_survey_star_rating) from PatientSurveyData "
+                "where patient_survey_star_rating in (1,2,3,4,5) group by location_state order by location_state")
+
     sql = cur.fetchall()
     redshift.commit()
 
@@ -175,6 +177,10 @@ def athena_create_database():
 
 def athena_create_table():
     athena = boto3.client('athena', region_name='us-east-1', aws_access_key_id=k1, aws_secret_access_key=k2)
+
+    with smart_open.smart_open('s3://' + k1 + ':' + k2 +'@hid-sp18-521/athena-input/PatientSurveyData.csv', 'wb') as fout:
+        for line in smart_open.smart_open('https://data.medicare.gov/resource/rmgi-5fhi.csv'):
+            response = fout.write(line + '\n')
 
     response = athena.start_query_execution(
         QueryString="""CREATE EXTERNAL TABLE IF NOT EXISTS i524.PatientSurveyData (
@@ -210,12 +216,15 @@ def athena_create_table():
                     survey_response_rate_percent_footnote string,
                     zip_code string
          )
-         ROW FORMAT SERDE 'org.openx.data.jsonserde.JsonSerDe'
+         ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde'
          WITH SERDEPROPERTIES (
-         'serialization.format' = '1'
-         ) LOCATION 's3://hid-sp18-521/'
-         TBLPROPERTIES ('has_encrypted_data'='false');""",
-        QueryExecutionContext={'Database': 'i524'}, ResultConfiguration={'OutputLocation': 's3://hid-sp18-521/athena-output'})
+           'separatorChar' = ',',
+           'quoteChar' = '\"'
+         )
+         STORED AS TEXTFILE 
+         LOCATION 's3://hid-sp18-521/athena-input'
+         TBLPROPERTIES ("skip.header.line.count"="1");""",
+        QueryExecutionContext={'Database': 'i524'}, ResultConfiguration={'OutputLocation': 's3://hid-sp18-521'})
 
     return response
 
@@ -224,20 +233,18 @@ def athena_drop_table():
 
     response = athena.start_query_execution(
         QueryString="DROP TABLE IF EXISTS PatientSurveyData",
-        QueryExecutionContext={'Database': 'i524'}, ResultConfiguration={'OutputLocation': 's3://hid-sp18-521/athena-output'})
+        QueryExecutionContext={'Database': 'i524'}, ResultConfiguration={'OutputLocation': 's3://hid-sp18-521'})
 
     return response
 
 def athena_query_table(city):
     athena = boto3.client('athena', region_name='us-east-1', aws_access_key_id=k1, aws_secret_access_key=k2)
 
-    query = 'SELECT * FROM PatientSurveyData WHERE City = %s' % (city)
+    query = 'SELECT * FROM patientsurveydata WHERE city = \'%s\'' % (city)
+    print query
 
     response = athena.start_query_execution(
         QueryString=query,
-        QueryExecutionContext={'Database': 'i524'}, ResultConfiguration={'OutputLocation': 's3://hid-sp18-521/athena-output'})
+        QueryExecutionContext={'Database': 'i524'}, ResultConfiguration={'OutputLocation': 's3://hid-sp18-521'})
 
     return response
-
-
-
