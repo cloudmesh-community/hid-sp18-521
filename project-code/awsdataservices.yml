@@ -176,10 +176,16 @@
             description: "Athena table PatientSurveyData created successfully."
           400:
             $ref: '#/responses/400Error'
-    /athena-query-table: 
-      put: 
-        description: "Queries the table PatientSurveyData on Athena and places the query output in CSV file on S3."
+    /athena-query-table/{city}: 
+      get: 
+        description: "Queries the table PatientSurveyData for data matching the city parameter on Athena and places the query output in CSV file on S3."
         operationId: "getPatientSurveyData-Athena"
+        parameters: 
+          - name: "city"
+            in: "path"
+            description: "Show all patient survey results for hospitals located in the city provided."
+            required: true
+            type: "string" 
         responses: 
           200:
             description: "Athena table PatientSurveyData queried successfully. Results output to CSV in S3."
