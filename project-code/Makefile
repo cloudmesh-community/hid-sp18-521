@@ -1,48 +1,32 @@
-#
-# Naturally you need to adapt this to make work for your project
-#
+install:
+	mkdir cloudmesh-awsdataservices
+	wget http://central.maven.org/maven2/io/swagger/swagger-codegen-cli/2.3.1/swagger-codegen-cli-2.3.1.jar -O swagger-codegen-cli.jar
+	java -jar swagger-codegen-cli.jar generate -i awsdataservices.yml -l python-flask -o cloudmesh-awsdataservices -D supportPython2=true
+	pip install pymysql boto3 smart_open psycopg2 
+	cp awsdataservices.py cloudmesh-awsdataservices/swagger_server/controllers
+	cp default_controller.py cloudmesh-awsdataservices/swagger_server/controllers
+	cp etc/configuration-awsdataservices.yml ~/.cloudmesh
+	cd cloudmesh-awsdataservices && pip install -r requirements.txt && python setup.py install
 
-all:
-	@echo "create a useful makefile that makes it easy to run your code"
-	@echo make sure your data is downloaded from the intenet"
+clean:
+	rm -r cloudmesh-awsdataservices
+	rm swagger-codegen-cli.jar
 
-data:
-	@echo "wget or curl your data from the internet"
+start:
+	cd cloudmesh-awsdataservices && python -m swagger_server
 
-generate:
-	@echo "generat your code such as swagger services"
-
-install: install-swagger install-mongo
-	@echo "install your code so it can be used on the system it is supposed to run"
-	@echo "you could have multiple installs so we giva na exampel"
-
-install-swagger:
-	@echo "install your swagger services"
-
-install-mongo:
-	@echo "install your mongo services - this is just an example, you may not use mongo"
-
-start: start-swagger start-mongo
-  @echo "start your code so it can be used on the system it is supposed to run"
-	@echo "you could have multiple starts so we giva na exampel"
-
-start-swagger:
-	@echo "start your swagger services"
-
-stop-mongo:
-	@echo "stop your mongo services - this is just an example, you may not use mongo"
-
-stop: stop-swagger stop-mongo
-  @echo "stop your code so it can be used on the system it is supposed to run"
-	@echo "you could have multiple stops so we giva na exampel"
-
-stop-swagger:
-	@echo "stop your swagger services"
-
-stop-mongo:
-	@echo "stop your mongo services - this is just an example, you may not use mongo"
+stop:
+	kill -9 $$(ps -ef | grep "python -m swagger_server" | awk '{print $$2}')
 
 test:
-	@echo "test your service"
+
+
+container:
+	docker build -t cloudmesh-awsdataservices .
+	docker create cloudmesh-awsdataservices
+
+container_start:
+	docker run cloudmesh-awsdataservices 
+
 
 
