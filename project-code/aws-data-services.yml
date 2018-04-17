@@ -68,6 +68,123 @@
                 $ref: "#/definitions/DataPipelineStatus"
           400:
             $ref: '#/responses/400Error'
+    /rds-mysql-query/{starRating}: 
+      get: 
+        description: "Runs a select query on the PatientSurveyData data stored in a mySQL RDS instance that we imported into from the Data Pipeline job."
+        operationId: "getPatientSurveyData-RDS"
+        parameters: 
+          - name: "starRating"
+            in: "path"
+            description: "Star rating for the patient survey data we'd like to see"
+            required: true
+            type: "string" 
+        responses: 
+          200:
+            description: "Returns the runtime status of the  WS Data Pipeline job to import the raw Medicare data file from S3 into a mySQL database running on Amazon RDS."
+            schema: 
+              type: "array"
+              items:
+                $ref: "#/definitions/PatientSurveyData"
+          400:
+            $ref: '#/responses/400Error'
+    /dynamo-db-delete-table: 
+      delete: 
+        description: "Deletes the table PatientSurveyData from DynamoDB."
+        operationId: "deleteDynamoDBTable"
+        responses: 
+          204:
+            description: "DyanmoDB table PatientSurveyData deleted successfully."
+          400:
+            $ref: '#/responses/400Error'
+    /dynamo-db-create-table: 
+      put: 
+        description: "Creates the table PatientSurveyData from DynamoDB."
+        operationId: "createDynamoDBTable"
+        responses: 
+          200:
+            description: "DynamoDB table PatientSurveyData created successfully."
+          400:
+            $ref: '#/responses/400Error'
+    /dynamo-db-insert-json: 
+      put: 
+        description: "Loads the table PatientSurveyData from a JSON file stored in S3."
+        operationId: "loadDynamoDBTable"
+        responses: 
+          200:
+            description: "DynamoDB table PatientSurveyData loaded successfully from S3 JSON file."
+          400:
+            $ref: '#/responses/400Error'
+    /dynamo-query-table: 
+      get: 
+        description: "Runs a scan on the PatientSurveyData data stored in DynamoDB to return all results for hospitals located in the state of MO."
+        operationId: "getPatientSurveyData-DynamoDB"
+        responses: 
+          200:
+            description: "Scan results on the PatientSurveyData data stored in DynamoDB to return all results for hospitals located in the state of MO."
+            schema: 
+              type: "array"
+              items:
+                $ref: "#/definitions/PatientSurveyData"
+          400:
+            $ref: '#/responses/400Error'
+    /redshift-insert-csv-from-s3: 
+      put: 
+        description: "Loads the table PatientSurveyData from a CSV file stored in S3 into a Redshift table."
+        operationId: "loadRedshiftTable"
+        responses: 
+          200:
+            description: "Redshift table PatientSurveyData loaded successfully from S3 CSV file."
+          400:
+            $ref: '#/responses/400Error'
+    /redshift-delete-table: 
+      delete: 
+        description: "Deletes all data from the table PatientSurveyData on Redshift."
+        operationId: "deleteRedshiftTable"
+        responses: 
+          204:
+            description: "Redshift table PatientSurveyData deleted successfully."
+          400:
+            $ref: '#/responses/400Error'
+    /redshift-query-table: 
+      get: 
+        description: "Runs a query on the PatientSurveyData data stored in Redshift to return the average star rating for hospitals in each state."
+        operationId: "getPatientSurveyData-Redshift"
+        responses: 
+          200:
+            description: "Query executed on the PatientSurveyData data stored in Redshift to return the average star rating for hospitals in each state."
+            schema: 
+              type: "array"
+              items:
+                $ref: "#/definitions/AvgStarRatingPerState"
+          400:
+            $ref: '#/responses/400Error'
+    /athena-delete-table: 
+      delete: 
+        description: "Deletes the table PatientSurveyData on Athena."
+        operationId: "deleteAthenaTable"
+        responses: 
+          204:
+            description: "Athena table PatientSurveyData deleted successfully."
+          400:
+            $ref: '#/responses/400Error'
+    /athena-create-table: 
+      put: 
+        description: "Creates the table PatientSurveyData on Athena."
+        operationId: "createAthenaTable"
+        responses: 
+          200:
+            description: "Athena table PatientSurveyData created successfully."
+          400:
+            $ref: '#/responses/400Error'
+    /athena-query-table: 
+      put: 
+        description: "Queries the table PatientSurveyData on Athena and places the query output in CSV file on S3."
+        operationId: "getPatientSurveyData-Athena"
+        responses: 
+          200:
+            description: "Athena table PatientSurveyData queried successfully. Results output to CSV in S3."
+          400:
+            $ref: '#/responses/400Error'
 
   definitions: 
     S3FileNames: 
@@ -80,6 +197,78 @@
       properties:
         run_status:
           type: "string"
+    AvgStarRatingPerState:
+      type: "object"
+      properties:
+        state:
+          type: "string"
+        avg_star_rating:
+          type: "string"
+    PatientSurveyData:
+      type: "object"
+      properties:
+        computed_region_csmy_5jwy:
+          type: "string"
+        computed_region_f3tr_pr43:
+                type: "string"
+        computed_region_nwen_78xc:
+                type: "string"
+        address:
+                type: "string"
+        city:
+                type: "string"
+        county_name:
+                type: "string"
+        hcahps_answer_description:
+                type: "string"
+        hcahps_answer_percent:
+                type: "string"
+        hcahps_answer_percent_footnote:
+                type: "string"
+        hcahps_linear_mean_value:
+                type: "string"
+        hcahps_measure_id:
+                type: "string"
+        hcahps_question:
+                type: "string"
+        hospital_name:
+                type: "string"
+        location:
+                type: "string"
+        location_address:
+                type: "string"
+        location_city:
+                type: "string"
+        location_state:
+                type: "string"
+        location_zip:
+                type: "string"
+        measure_end_date:
+                type: "string"
+        measure_start_date:
+                type: "string"
+        number_of_completed_surveys:
+                type: "string"
+        number_of_completed_surveys_footnote:
+                type: "string"
+        patient_survey_star_rating:
+                type: "string"
+        patient_survey_star_rating_footnote:  
+                type: "string"
+        phone_number:
+                type: "string"
+        phone_number_type:
+                type: "string"
+        provider_id:
+                type: "string"
+        state:
+                type: "string"
+        survey_response_rate_percent:
+                type: "string"
+        survey_response_rate_percent_footnote:
+                type: "string"
+        zip_code:
+                type: "string"
 
   responses:
     400Error:

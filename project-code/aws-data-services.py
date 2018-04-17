@@ -22,14 +22,14 @@ def medicare_patient_survey_data_csv_to_s3():
     with smart_open.smart_open('s3://' + k1 + ':' + k2 +'@hid-sp18-521/PatientSurveyData.csv', 'wb') as fout:
         for line in smart_open.smart_open('https://data.medicare.gov/resource/rmgi-5fhi.csv'):
             response = fout.write(line + '\n')
-            return response
+        return response
 
 # Pulls Medicare patient survey data set in JSON format directly from their web site into an S3 bucket
 def medicare_patient_survey_data_json_to_s3():
     with smart_open.smart_open('s3://' + k1 + ':' + k2 +'@hid-sp18-521/PatientSurveyData.json', 'wb') as fout:
         for line in smart_open.smart_open('https://data.medicare.gov/resource/rmgi-5fhi.json'):
             response = fout.write(line + '\n')
-            return response
+        return response
 
 # Pulls a list of all of the files that exist in the bucket this application uses
 def s3_bucket_allfiles():
@@ -164,15 +164,6 @@ def redshift_query_table_data():
 
     return sql
 
-def athena_create_database():
-    athena = boto3.client('athena', region_name='us-east-1', aws_access_key_id=k1, aws_secret_access_key=k2)
-
-    response = athena.start_query_execution(
-            QueryString='CREATE DATABASE IF NOT EXISTS i524',
-            QueryExecutionContext={'Database': 'default'}, ResultConfiguration={'OutputLocation': 's3://hid-sp18-521/athena-output'})
-
-    return response
-
 def athena_create_table():
     athena = boto3.client('athena', region_name='us-east-1', aws_access_key_id=k1, aws_secret_access_key=k2)
 
@@ -239,7 +230,6 @@ def athena_query_table(city):
     athena = boto3.client('athena', region_name='us-east-1', aws_access_key_id=k1, aws_secret_access_key=k2)
 
     query = 'SELECT * FROM patientsurveydata WHERE city = \'%s\'' % (city)
-    print query
 
     response = athena.start_query_execution(
         QueryString=query,
