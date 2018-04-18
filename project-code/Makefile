@@ -1,8 +1,9 @@
 install:
-	mkdir cloudmesh-awsdataservices
+	mkdir -p cloudmesh-awsdataservices
+	mkdir -p ~/.cloudmesh
 	wget http://central.maven.org/maven2/io/swagger/swagger-codegen-cli/2.3.1/swagger-codegen-cli-2.3.1.jar -O swagger-codegen-cli.jar
 	java -jar swagger-codegen-cli.jar generate -i awsdataservices.yml -l python-flask -o cloudmesh-awsdataservices -D supportPython2=true
-	pip install pymysql boto3 smart_open psycopg2 
+	pip install pymysql boto3 smart_open psycopg2 psycopg2-binary
 	cp awsdataservices.py cloudmesh-awsdataservices/swagger_server/controllers
 	cp default_controller.py cloudmesh-awsdataservices/swagger_server/controllers
 	cp etc/configuration-awsdataservices.yml ~/.cloudmesh
@@ -58,7 +59,7 @@ container:
 	docker build -t cloudmesh-awsdataservices .
 	docker create cloudmesh-awsdataservices
 
-container_start:
+container-start:
 	docker run cloudmesh-awsdataservices 
 
 
