@@ -18,8 +18,37 @@ start:
 stop:
 	kill -9 $$(ps -ef | grep "python -m swagger_server" | awk '{print $$2}')
 
-test:
+test-copy-files-to-s3:
+	curl -X PUT "http://localhost:8080/cloudmesh/aws-data-services/csv-to-s3" -H "accept: application/json"	
+	curl -X PUT "http://localhost:8080/cloudmesh/aws-data-services/json-to-s3" -H "accept: application/json"	
 
+test-s3-files:
+	curl -X GET "http://localhost:8080/cloudmesh/aws-data-services/s3-files" -H "accept: application/json"
+
+test-data-pipeline-start:
+	curl -X PUT "http://localhost:8080/cloudmesh/aws-data-services/data-pipeline-s3-to-rds" -H "accept: application/json"	
+
+test-data-pipeline-status:
+	curl -X GET "http://localhost:8080/cloudmesh/aws-data-services/data-pipeline-s3-to-rds-status" -H "accept: application/json"	
+
+test-rds:
+	curl -X GET "http://localhost:8080/cloudmesh/aws-data-services/rds-mysql-query/5" -H "accept: application/json"	
+
+test-dynamodb:
+	curl -X DELETE "http://localhost:8080/cloudmesh/aws-data-services/dynamo-db-delete-table" -H "accept: application/json"	
+	curl -X PUT "http://localhost:8080/cloudmesh/aws-data-services/dynamo-db-create-table" -H "accept: application/json"	
+	curl -X PUT "http://localhost:8080/cloudmesh/aws-data-services/dynamo-db-insert-json" -H "accept: application/json"	
+	curl -X GET "http://localhost:8080/cloudmesh/aws-data-services/dynamo-query-table" -H "accept: application/json"	
+
+test-redshift:
+	curl -X DELETE "http://localhost:8080/cloudmesh/aws-data-services/redshift-delete-table" -H "accept: application/json"	
+	curl -X PUT "http://localhost:8080/cloudmesh/aws-data-services/redshift-insert-csv-from-s3" -H "accept: application/json"	
+	curl -X GET "http://localhost:8080/cloudmesh/aws-data-services/redshift-query-table" -H "accept: application/json"	
+
+test-athena:
+	curl -X DELETE "http://localhost:8080/cloudmesh/aws-data-services/athena-delete-table" -H "accept: application/json"
+	curl -X PUT "http://localhost:8080/cloudmesh/aws-data-services/athena-create-table" -H "accept: application/json"		
+	curl -X GET "http://localhost:8080/cloudmesh/aws-data-services/athena-query-table/TAOS" -H "accept: application/json"	
 
 container:
 	docker build -t cloudmesh-awsdataservices .
