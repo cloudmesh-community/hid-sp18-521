@@ -3,7 +3,7 @@ from boto3.dynamodb.conditions import Key, Attr
 
 # Add steps to the Makefile setup to copy my config file to this path
 
-with open(os.path.expanduser("~/.cloudmesh/configuration-aws-data-services.yml"), 'r') as ymlfile:
+with open(os.path.expanduser("~/.cloudmesh/configuration-awsdataservices.yml"), 'r') as ymlfile:
     config = yaml.load(ymlfile)
 
 mysql_user = config['cloudmesh']['aws-data-services']['mysql']['user']['name']

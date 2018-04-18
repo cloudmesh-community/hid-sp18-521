@@ -34,9 +34,13 @@ test-data-pipeline-status:
 test-rds:
 	curl -X GET "http://localhost:8080/cloudmesh/aws-data-services/rds-mysql-query/5" -H "accept: application/json"	
 
-test-dynamodb:
+test-dynamodb-delete-table:
 	curl -X DELETE "http://localhost:8080/cloudmesh/aws-data-services/dynamo-db-delete-table" -H "accept: application/json"	
-	curl -X PUT "http://localhost:8080/cloudmesh/aws-data-services/dynamo-db-create-table" -H "accept: application/json"	
+
+test-dynamodb-create-table:
+	curl -X PUT "http://localhost:8080/cloudmesh/aws-data-services/dynamo-db-create-table" -H "accept: application/json"
+
+test-dynamodb-insert-query-table:
 	curl -X PUT "http://localhost:8080/cloudmesh/aws-data-services/dynamo-db-insert-json" -H "accept: application/json"	
 	curl -X GET "http://localhost:8080/cloudmesh/aws-data-services/dynamo-query-table" -H "accept: application/json"	
 
