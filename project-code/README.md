@@ -8,7 +8,7 @@ This folder contains all of the files and code necessary to implement and test o
     git clone https://github.com/cloudmesh-community/hid-sp18-521.git
     cd hid-sp18-521/project-code
     ```
-3. Additional steps can then be performed by excuting the Makefile using the usage parameters below:
+3. Additional steps can then be performed by executing the Makefile using the commands below:
     -  Installing the Swagger service and code dependencies
         ```sh
         make install
@@ -33,9 +33,37 @@ This folder contains all of the files and code necessary to implement and test o
         ```sh
         make test-s3-files
         ```
-    -  Starts the Data Pipeline job to import the Medicare CSV file into a MySQL database on Amazon RDS (this might take about 5 minutes to complete):
+    -  Starts the Data Pipeline job to import the Medicare CSV file stored in S3 into a MySQL database on Amazon RDS (this might take about 5 minutes to complete):
         ```sh
         make test-data-pipeline-start
+        ```
+    -  Checks the status of the Data Pipeline job started by test-data-pipeline-start:
+        ```sh
+        make test-data-pipeline-status
+        ```
+    -  Executes a select query on the PatientSurveyData table in the MySQL database on RDS that contains the S3 CSV data imported by the Data Pipeline job. This example query will return all of the hospitals that received a 5 star rating in the survey:
+        ```sh
+        make test-rds
+        ```
+    -  Deletes the table PatientSurveyData from DynamoDB:
+        ```sh
+        make test-dynamodb-delete-table
+        ```
+    -  Creates the table PatientSurveyData on DynamoDB (wait 3-4 minutes after running the delete command to run this):
+        ```sh
+        make test-dynamodb-create-table
+        ```
+    -  Inserts the patient survey data from the JSON file located in S3 the table PatientSurveyData on DynamoDB. Then runs a table scan on the PatientSurveyData table in DynammoDB to return all hospitals located in the state of MO (wait 3-4 minutes after running the create command to run this):
+        ```sh
+        make test-dynamodb-insert-query-table
+        ```
+    -  Deletes all data from the Redshift table PatientSurveyData, inserts the S3 CSV survey data into the Redshift table PatientSurveyData and then queries the Redshift table PatientSurveyData to return the average hospital rating per state:
+        ```sh
+        make test-redshift
+        ```
+    -  Drops, creates and then queries the Athena table PatientSurveyData (Athena query output is saved to the S3 bucket and not returned to the API):
+        ```sh
+        make test-athena
         ```
     -  Create a Docker image and container named cloudmesh-awsdataservices using Dockerfile:
         ```sh
