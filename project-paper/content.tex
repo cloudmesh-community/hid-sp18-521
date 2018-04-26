@@ -1,7 +1,7 @@
-% status: 95
+% status: 100
 % chapter: Amazon
 
-\title{Interacting With Data Services on AWS}
+\title{Using AWS Database and Data Services}
 
 \author{Scott Steinbruegge}
 \affiliation{%
@@ -22,16 +22,15 @@ data instead of trying to obtain or provision their own hardware beforehand.
 By using a data set that contains Medicare hospital patient survey 
 information, we showcase how REST APIs can be used to directly interact with 
 multiple AWS services that are used specifically for data related use cases. 
-While we provide some examples with how to interact with these services 
-through the AWS Management Console, the AWS Python SDK called Boto is the main 
-method used in our project in order to be able to work programmatically with 
-the Amazon APIs exposed by each of their services. We start with presenting 
-how to get raw data onto the AWS platform directly from the web and landing 
-that data in S3 for use by other AWS services such as Data Pipeline, RDS, 
-Redshift, DynamoDB and Athena. Along the way we provide explanations and hands 
-on coding examples for each service in order to gain insight into how to 
-effectively interact with AWS while performing a variety of data related 
-tasks. 
+We provide some examples of how to interact with these services 
+through the AWS Management Console, but the AWS Python SDK called Boto is the 
+main method used in our project in order to be able to work programmatically 
+with the Amazon APIs. We start with presenting how to get raw data onto the 
+AWS platform directly from the web and landing that data in S3 for use by 
+other AWS services such as Data Pipeline, RDS, Redshift, DynamoDB and Athena. 
+Along the way we provide explanations and hands on coding examples for each 
+service in order to gain insight into how to effectively interact with AWS 
+while performing a variety of data related tasks. 
 \end{abstract}
 
 \keywords{hid-sp18-521, Amazon, AWS, Swagger, AWS Data Services}
@@ -126,7 +125,13 @@ initial user creation for the remaining AWS services we would be working with
 later on: Data Pipeline, RDS, Redshift, DynamoDB and Athena. Now that we had 
 our user created and the proper permissions assigned to it, we were then able 
 to get started on setting up and interacting with each of the AWS data 
-services. 
+services. The final list of policies assigned to our user are displayed in
+Figure~\ref{f:iam}.
+
+\begin{figure}[!ht]
+  \centering\includegraphics[width=\columnwidth]{images/iam.png}
+  \caption{IAM user permissions}\label{f:iam}
+\end{figure}
 
 Programmatically interacting with services on AWS requires the code to utilize 
 both the access key ID and secret access key generated upon IAM user creation. 
@@ -140,7 +145,7 @@ passwords to variables for each service needing credentials. The majority of
 connections to the AWS services utilized need only the IAM access keys but 
 connecting to the MySQL instance on RDS and the Redshift database both 
 required separate user names and passwords. We chose to store the access key 
-id in the k1 variable and the secret access key in the k2 variable to better 
+ID in the k1 variable and the secret access key in the k2 variable to better 
 mask what they really are since it is best to keep these keys secure as 
 possible~\cite{hid-sp18-521-IAMkeys}. 
 
@@ -174,25 +179,25 @@ k2 = config['cloudmesh']['aws-data-services']
 
 \subsection{S3}
 
-Once our IAM user was created we were ready to start ingesting our raw data 
+Once our IAM user was created, we were ready to start ingesting our raw data 
 into AWS. As a starting point, we chose to land our raw CSV and JSON files in 
 S3. ``Amazon S3 stores data as objects within resources called buckets. You 
 can store as many objects as you want within a bucket, and write, read, and 
 delete objects in your bucket~\cite{hid-sp18-521-S3features}.'' We created our 
 bucket through the AWS Management Console by browsing the services menu and 
 selecting S3 from the services list. From there we selected the create bucket 
-button and entered a bucket name of hid-sp18-521 and left all of the other 
+button, entered a bucket name of hid-sp18-521 and left all of the other 
 options to what they were defaulted to since our IAM user has full access to 
 S3 for this project and then created the bucket. 
 
-With our S3 bucket in place we were then ready to start writing our Python 
+With our S3 bucket in place, we were then ready to start writing our Python 
 code to interact with the AWS services. The first function we implemented was 
 to pull the raw Medicare data files in both CSV and JSON format directly from 
 the web into our S3 bucket. This was accomplished by using the Python library 
 smart open. This library could be used to stream large data files to and from 
 a variety of data sources including S3 and HTTP~\cite{hid-sp18-521-smartopen}. 
 To connect to the S3 bucket we had to specify the destination file and bucket 
-name as well as the access key id and secret access key of our IAM user. A for 
+name as well as the access key ID and secret access key of our IAM user. A for 
 loop is then used to import all of the rows in the raw file directly from the 
 HTTP location where the file is stored and writes it to the S3 destination 
 file provided. If the copy was performed successfully, the response returned 
@@ -285,7 +290,7 @@ AWS started the provisioning of the MySQL instance which took about 5 to 10
 minutes total to come online and ready for 
 connections~\cite{hid-sp18-521-rds-mysql}. 
 
-Once the instance was running it was time to log into the instance using the 
+Once the instance was running, it was time to log into the instance using the 
 master user and password we setup upon creation in order to create an 
 additional user login and the table we would use to import our data into. 
 Interacting with a database residing on RDS is accomplished the same way a 
@@ -303,7 +308,13 @@ Workbench. From here, we executed standard SQL statements against the I524
 database to create a new database user, named IUuser, which we would use for 
 programmatically connecting through our APIs and created the empty table 
 schema named PatientSurveyData that would contain the CSV data imported 
-from S3~\cite{hid-sp18-521-rds-mysql}. 
+from S3~\cite{hid-sp18-521-rds-mysql}. The location of the RDS endpoint and
+port number within the AWS Management Console is shown in Figure~\ref{f:rds}.
+
+\begin{figure}[!ht]
+  \centering\includegraphics[width=\columnwidth]{images/rds.png}
+  \caption{RDS server information}\label{f:rds}
+\end{figure} 
 
 \subsection{Data Pipeline}
 
@@ -332,7 +343,7 @@ how to properly setup and execute a pipeline. To start creating our pipeline
 to import data from our S3 bucket in the MySQL RDS database, we had to 
 navigate to the AWS Data Pipeline service listed under the services menu on 
 the main dashboard of the AWS Management Console. From there, since we had yet 
-to create any pipelines, it presented an into screen and we selected the 
+to create any pipelines, it presented an intro screen and we selected the 
 button get started now to proceed. The next page is where we specified the 
 pipelines name and source. Under the source options, there were options to 
 build using a template, import a definition or build using Architect. Using 
@@ -346,7 +357,7 @@ to supply the RDS instance name, user name and password to connect with, the
 standard SQL based insert statement we'd use to insert data in our MySQL table 
 we created earlier named PatientSurveyData and an optional statement which we 
 utilized to clear out all of the data in the existing MySQL table before we 
-imported the data from the S3 file~\cite{hid-sp18-521-datapipelinestarting}. 
+imported the data from the S3 file~\cite{hid-sp18-521-datapipelinestarting}.
 
 After specifying all of these pipeline parameters, we then scrolled down to 
 the scheduling section where we chose to run our pipeline on activation only, 
@@ -365,16 +376,24 @@ step, the pipeline then starts a component to load the data from S3 into the
 RDS database which is executed from the same EC2 instance that was created in 
 step one. Once both components completed with a status of successful, we were 
 ready to query the MySQL table and interact with the Medicare data within a 
-relational database in the AWS cloud~\cite{hid-sp18-521-datapipelinestarting}. 
+relational database in the AWS cloud~\cite{hid-sp18-521-datapipelinestarting}.
+Figure~\ref{f:datapipeline} shows the layout of how the data pipeline looks 
+within Architect as well as the parameters we specified upon creation of the 
+pipeline.  
+
+\begin{figure}[!ht]
+  \centering\includegraphics[width=\columnwidth]{images/datapipeline.png}
+  \caption{Data Pipeline layout and parameters}\label{f:datapipeline}
+\end{figure} 
 
 With pipeline in place and tested to work successfully, we wanted to implement 
 functionality within our code that would allow a user to both activate and 
 check the execution status of our data pipeline on demand.  Boto would allow 
 us to accomplish these tasks through our Python code by utilizing the Data 
 Pipeline API. We assigned a variable to the client API connection for data 
-pipeline by providing the resource name, region, access key id and secret 
+pipeline by providing the resource name, region, access key ID and secret 
 access key in the same manner we did for the S3 code. We could then use the 
-activate pipeline function and pass in the pipeline id, which can be retrieved 
+activate pipeline function and pass in the pipeline ID, which can be retrieved 
 from the list pipelines screen on the Data Pipeline page in AWS Management 
 Console. This code then allowed us to activate our pipeline through an API 
 call whenever we wanted. A similar approach was taken when pulling the status 
@@ -482,11 +501,11 @@ platform~\cite{hid-sp18-521-dynamodbfaq}.
 
 Creating a DynamoDB table was our first step which we were able to do within 
 Boto by using the DynamoDB resource API. To creation a service connection, we 
-needed to pass in the region name, access key id and secret access key. From 
+needed to pass in the region name, access key ID and secret access key. From 
 there, we were then able to call the create table method and provide several 
 required arguments. The table name was provided as well as the key schema, 
 which identifies what attributes would be the primary key and the key type 
-for each attribute used. Our data had a key in place already named provider id 
+for each attribute used. Our data had a key in place already named provider ID 
 which was used as the primary key for the DynamoDB table as well. There were 
 two options for key type, hash or range. A hash key, also called a partition 
 key, which is used to handle distribution of the data across multiple 
@@ -494,7 +513,7 @@ partitions, and a range key, also called a sort key, which indicates how the
 data stored in DynamoDB will be sorted. For single attribute primary key, a 
 hash key needed to be used as the key type. We also needed to supply the 
 definitions of the attributes we chose to use as our key. We specified this 
-as provider id and assigned it a data type of string. The last argument we 
+as provider ID and assigned it a data type of string. The last argument we 
 needed to supply in order to create a table was provisioned throughput, which 
 was the amount of read and write activity the table could 
 support~\cite{hid-sp18-521-dynamodbfaq}.  
@@ -660,7 +679,7 @@ additional configuration page, we left all of the defaults in place and made
 sure that the cluster was set to be publicly accessible since we wanted to 
 query the Redshift database from our API. We then proceeded to the review page 
 and opted to then launch our 
-cluster~\cite{hid-sp18-521-redshift-gettingstarted}.  
+cluster~\cite{hid-sp18-521-redshift-gettingstarted}. 
 
 After waiting several minutes for our cluster to come online, we were then 
 ready to connect to the cluster in order to setup our new database, user and 
@@ -676,7 +695,14 @@ in SQL Workbench/J and assign the Redshift JDBC driver to the profile. The
 settings in the profile that we needed to provide were the JDBC URL, master 
 user information and check the autocommit box. We were then able to 
 successfully connect to Redshift and start running queries against 
-it~\cite{hid-sp18-521-redshift-gettingstarted}.  
+it~\cite{hid-sp18-521-redshift-gettingstarted}. Figure~\ref{f:sqlwkbench} 
+shows the Redshift connection information we provided to the SQL
+Workbench/J GUI in order to access our Redshift cluster for the first time.
+
+\begin{figure}[!ht]
+  \centering\includegraphics[width=\columnwidth]{images/sqlwkbench.png}
+  \caption{SQL Workbench/J to Redshift}\label{f:sqlwkbench}
+\end{figure}  
 
 We used a variation of the code for the one-time run SQL queries we executed 
 to create our RDS database, user and table. We also wanted our API user to 
@@ -807,17 +833,25 @@ HiveQL, which uses a simple create database command that other SQL based
 languages use and allowed us to create a new metadata database name i524. 
 Since this would just be a one-time database creation, this functionality was 
 not implemented into our APIs~\cite{hid-sp18-521-whatisathena}. 
+Figure~\ref{f:athena} shows the Athena query editor which contains an input 
+window where we could run our HiveQL code to create our metadata database
+and run interactive queries as needed.
+
+\begin{figure}[!ht]
+  \centering\includegraphics[width=\columnwidth]{images/athena.png}
+  \caption{Athena query editor}\label{f:athena}
+\end{figure}  
 
 Next, we coded a create table DDL statement using HiveQL which would setup the 
 metadata structure needed to be able to query the S3 file directly from 
 Athena. Since we were creating the metadata table manually, the CSV file we 
 wanted to use needed to exist in its own bucket separate from the rest of the 
-files since the input parameters did not allow us to specific a specific S3 
-file name to use, only path which would then look for the file based on the 
-source file type we indicated in the create table code. We used the resource 
-API in Boto to establish a connection to Athena as we did for the other 
-services we used in our APIs above. From there we could then use the 
-start query execution method to run our DDL 
+files since the input parameters did not allow us to specify a direct S3 
+file name to use. It only reqiored a file path which would then look for the 
+file based on the source file type we indicated in the create table code. We 
+used the resource API in Boto to establish a connection to Athena as we did 
+for the other services we used in our APIs above. From there we could then use 
+the start query execution method to run our DDL 
 code~\cite{hid-sp18-521-boto-athena}. We opted to make this create table 
 statement part of our API code in order to show how we could execute Athena 
 queries programmatically. The create table command checks to see if the table 
@@ -893,7 +927,7 @@ return response
 
 In order to be able to re-run our Athena test cases, we included a function 
 to delete the Athena table so that we could repopulate it on demand as needed 
-and uses the same method start query execution that the other two Athena 
+and used the same method start query execution that the other two Athena 
 functions do in order to interact with the 
 service~\cite{hid-sp18-521-boto-athena}. 
 
