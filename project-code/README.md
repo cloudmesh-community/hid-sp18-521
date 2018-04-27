@@ -13,17 +13,9 @@ This folder contains all of the files and code necessary to implement and test o
         ```sh
         make install
         ```
-    -  Remove service and cleanup files
-        ```sh
-        make clean
-        ```
     -  Start the service
         ```sh
         make start
-        ```
-    -  Stop the service
-        ```sh
-        make stop
         ```
     -  Copy the Medicare data file in CSV and JSON format from the Medicare website to an S3 bucket:
         ```sh
@@ -72,4 +64,12 @@ This folder contains all of the files and code necessary to implement and test o
     -  Run the Docker container named cloudmesh-awsdataservices:
         ```sh
         make container-start
+        ```
+    -  Stop the service
+        ```sh
+        make stop
+        ```
+    -  Remove service and cleanup files
+        ```sh
+        make clean
         ```
