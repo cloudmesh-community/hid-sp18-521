@@ -17,6 +17,8 @@ This folder contains all of the files and code necessary to implement and test o
         ```sh
         make start
         ```
+Once the service has been started you will need to open a new terminal window and change directory to where the Makefile exists          again (cd yourinstallfolder/hid-sp18-521/project-code), then the addtional commands below can be run:
+   
     -  Copy the Medicare data file in CSV and JSON format from the Medicare website to an S3 bucket:
         ```sh
         make test-copy-files-to-s3
