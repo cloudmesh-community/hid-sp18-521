@@ -59,14 +59,6 @@ This folder contains all of the files and code necessary to implement and test o
         ```sh
         make test-athena
         ```
-    -  Create a Docker image and container named cloudmesh-awsdataservices using Dockerfile:
-        ```sh
-        make container
-        ```
-    -  Run the Docker container named cloudmesh-awsdataservices:
-        ```sh
-        make container-start
-        ```
     -  Stop the service
         ```sh
         make stop
@@ -75,3 +67,12 @@ This folder contains all of the files and code necessary to implement and test o
         ```sh
         make clean
         ```
+    -  Create a Docker image and container named cloudmesh-awsdataservices using Dockerfile:
+        ```sh
+        make container
+        ```
+    -  Run the Docker container named cloudmesh-awsdataservices:
+        ```sh
+        make container-start
+        ```
+
