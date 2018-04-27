@@ -53,7 +53,7 @@ This folder contains all of the files and code necessary to implement and test o
         ```sh
         make test-dynamodb-create-table
         ```
-    -  Inserts the patient survey data from the JSON file located in S3 the table PatientSurveyData on DynamoDB. Then runs a table scan on the PatientSurveyData table in DynammoDB to return all hospitals located in the state of MO (wait 3-4 minutes after running the create command to run this):
+    -  Inserts the patient survey data from the JSON file located in S3 the table PatientSurveyData on DynamoDB. Then runs a table scan on the PatientSurveyData table in DynammoDB to return all hospitals located in the state of MO. This can take about 5 to 10 minutes to complete (also wait 3-4 minutes after running the create table command to run this):
         ```sh
         make test-dynamodb-insert-query-table
         ```
