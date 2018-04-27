@@ -6,7 +6,7 @@ install:
 	pip install pymysql boto3 smart_open psycopg2 psycopg2-binary
 	cp awsdataservices.py cloudmesh-awsdataservices/swagger_server/controllers
 	cp default_controller.py cloudmesh-awsdataservices/swagger_server/controllers
-	cp etc/configuration-awsdataservices.yml ~/.cloudmesh
+	wget https://iu.box.com/shared/static/01za2okav3ly1zl6z545l57wj1gq120m.yml -O ~/.cloudmesh/configuration-awsdataservices.yml
 	cd cloudmesh-awsdataservices && pip install -r requirements.txt && python setup.py install
 
 clean:
