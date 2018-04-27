@@ -35,12 +35,12 @@ WORKDIR hid-sp18-521/project-code
 
 RUN mkdir -p cloudmesh-awsdataservices
 RUN mkdir -p ~/.cloudmesh
+RUN wget https://iu.box.com/shared/static/01za2okav3ly1zl6z545l57wj1gq120m.yml -O ~/.cloudmesh/configuration-awsdataservices.yml
 RUN wget http://central.maven.org/maven2/io/swagger/swagger-codegen-cli/2.3.1/swagger-codegen-cli-2.3.1.jar -O swagger-codegen-cli.jar
 RUN java -jar swagger-codegen-cli.jar generate -i awsdataservices.yml -l python-flask -o cloudmesh-awsdataservices -D supportPython2=true
 RUN pip install pymysql boto3 smart_open psycopg2 psycopg2-binary
 RUN cp awsdataservices.py cloudmesh-awsdataservices/swagger_server/controllers
 RUN cp default_controller.py cloudmesh-awsdataservices/swagger_server/controllers
-RUN cp etc/configuration-awsdataservices.yml ~/.cloudmesh
 RUN cd cloudmesh-awsdataservices && pip install -r requirements.txt && python setup.py install
 
 EXPOSE 8080
