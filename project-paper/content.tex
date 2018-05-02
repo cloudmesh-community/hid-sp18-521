@@ -1,6 +1,12 @@
 % status: 100
 % chapter: Amazon
 
+\makeatletter
+\newcommand{\verbatimfont}[1]{\def\verbatim@font{#1}}%
+\makeatother
+
+\verbatimfont{\footnotesize}
+
 \title{Interacting With Data Services on AWS}
 
 \author{Scott Steinbruegge}
@@ -147,12 +153,13 @@ connecting to the MySQL instance on RDS and the Redshift database both
 required separate user names and passwords. We chose to store the access key 
 ID in the k1 variable and the secret access key in the k2 variable to better 
 mask what they really are since it is best to keep these keys secure as 
-possible~\cite{hid-sp18-521-IAMkeys}. 
+possible~\cite{hid-sp18-521-IAMkeys}. The Python code used to pull connection
+information from the YAML file is shown in Figure~\ref{f:yaml}. 
 
+\begin{figure}[!ht]
 \begin{verbatim}
 with open(os.path.expanduser(
-``~/.cloudmesh/configuration-awsdataservices.yml'')
-	, 'r') as ymlfile:
+``~/.cloudmesh/configuration-awsdataservices.yml''), 'r') as ymlfile:
 
 config = yaml.load(ymlfile)
 
@@ -166,16 +173,14 @@ redshift_user = config['cloudmesh']
 ['aws-data-services']['redshift']['user']['name']
 
 redshift_password = config['cloudmesh']
-['aws-data-services']['redshift']['user']
-['password']
+['aws-data-services']['redshift']['user']['password']
 
-k1 = config['cloudmesh']['aws-data-services']
-['misc']['k1']
+k1 = config['cloudmesh']['aws-data-services']['misc']['k1']
 
-k2 = config['cloudmesh']['aws-data-services']
-['misc']['k2']
+k2 = config['cloudmesh']['aws-data-services']['misc']['k2']
 \end{verbatim}
-
+\caption{Python code to import YAML configuration settings}\label{f:yaml}
+\end{figure} 
 
 \subsection{S3}
 
@@ -204,22 +209,23 @@ file provided. If the copy was performed successfully, the response returned
 is the total size of the file that was written into S3. Code to perform this 
 task for both the CSV and JSON import into S3 were exactly the same except for 
 the file extension. Both of these functions could be rerun as needed and the 
-S3 file would just get overwritten if it already existed. 
+S3 file would just get overwritten if it already existed. The Python code used
+to import the raw data files into S3 is shown in Figure~\ref{f:rawdata}. 
 
+\begin{figure}[!ht]
 \begin{verbatim}
 with smart_open.smart_open('s3://' + k1 + ':' + k2 
-+'@hid-sp18-521/PatientSurveyData.csv', 'wb') as 
-	fout:
++'@hid-sp18-521/PatientSurveyData.csv', 'wb') as fout:
 
-for line in 
-smart_open.smart_open
-('https://data.medicare.gov/resource/
-	rmgi-5fhi.csv'):
+   for line in smart_open.smart_open('https://data.medicare.gov/resource/
+   rmgi-5fhi.csv'):
        
-response = fout.write(line + '\n')
+      response = fout.write(line + '\n')
 
 return response
 \end{verbatim}
+\caption{Python code to import raw data files into S3}\label{f:rawdata}
+\end{figure} 
 
 Once the raw data was in place in S3, we wanted to verify that the files we 
 copied actually existed in our S3 bucket. To do this, we connected to the S3 
@@ -230,8 +236,11 @@ name we were interested in using~\cite{hid-sp18-521-boto-bucket}. We were then
 able to setup a for loop to use the bucket class method called object to get 
 the names of all files located within our S3 bucket and append them to a list 
 variable. This list variable would then be returned to our API to show all of 
-the names of the files located within our project specific bucket. 
+the names of the files located within our project specific bucket. The Python 
+code used to list all files located in the S3 bucket is shown in 
+Figure~\ref{f:s3bucket}.
 
+\begin{figure}[!ht]
 \begin{verbatim}
 file_names = []
 
@@ -241,10 +250,12 @@ s3 = boto3.resource('s3', region_name='us-east-1'
 bucket = s3.Bucket('hid-sp18-521')
 
 for object in bucket.objects.all():
-  file_names.append(object.key)
+   file_names.append(object.key)
 
 return file_names
 \end{verbatim}
+\caption{Python code to show all files located in S3 bucket}\label{f:s3bucket}
+\end{figure} 
 
 \subsection{RDS}
 
@@ -402,32 +413,34 @@ describe pipelines method and return the string value of a key named
 @pipelineState from the list of pipeline descriptions for this pipeline in 
 order to present the current runtime status. So now we were able to monitor 
 the status of the pipeline job we were just able to start within another 
-API~\cite{hid-sp18-521-botodatapipeline}.  
+API~\cite{hid-sp18-521-botodatapipeline}. The Python code used to both start
+the pipeline and check the status of the pipeline is shown in 
+Figure~\ref{f:datapipelinecode}. 
 
+\begin{figure}[!ht]
 \begin{verbatim}
-pipeline = boto3.client('datapipeline',
-region_name='us-east-1', 
+pipeline = boto3.client('datapipeline', region_name='us-east-1', 
 aws_access_key_id=k1, aws_secret_access_key=k2)
 
-response = pipeline.activate_pipeline
-(pipelineId='df-09855991V8LTRRRNJOQW')
+response = pipeline.activate_pipeline(pipelineId='df-09855991V8LTRRRNJOQW')
 
 return response
 ---
-pipeline = boto3.client('datapipeline',
-region_name='us-east-1', 
+pipeline = boto3.client('datapipeline', region_name='us-east-1', 
 aws_access_key_id=k1, aws_secret_access_key=k2)
 
-pipeline_status = pipeline.describe_pipelines(
-pipelineIds=['df-09855991V8LTRRRNJOQW'])
+pipeline_status = 
+        pipeline.describe_pipelines(pipelineIds=['df-09855991V8LTRRRNJOQW'])
 
-fields = pipeline_status
-['pipelineDescriptionList'][0]['fields']
+fields = pipeline_status['pipelineDescriptionList'][0]['fields']
 
 for field in fields:
-  if field['key'] == '@pipelineState':
-    return field['stringValue']
+   if field['key'] == '@pipelineState':
+      return field['stringValue']
 \end{verbatim}
+\caption{Python code to start and return status of data pipeline}
+\label{f:datapipelinecode}
+\end{figure} 
 
 Once the pipeline execution was in place within our code, we then felt 
 comfortable enough to develop an API to run a query against the data we 
@@ -451,13 +464,13 @@ interested in returning. The SQL statement was then run by calling the execute
 method using the SQL query variable and starRating parameter as arguments. 
 The fetchall method was then invoked to collect all of the rows returned in 
 the results and return them to our API for presentation to the 
-user~\cite{hid-sp18-521-pymysql}. 
+user~\cite{hid-sp18-521-pymysql}. The Python code used to query the MySQL RDS
+database is shown in Figure~\ref{f:rdscode}. 
 
+\begin{figure}[!ht]
 \begin{verbatim}
-connection =
-pymysql.connect
-(host='iu-sp18.cgnrvgmckfic.
-	us-east-1.rds.amazonaws.com',
+connection = pymysql.connect(
+host='iu-sp18.cgnrvgmckfic.us-east-1.rds.amazonaws.com',
 user=mysql_user,
 password=mysql_password,
 db='I524',
@@ -465,13 +478,15 @@ charset='utf8mb4',
 cursorclass=pymysql.cursors.DictCursor)
 
 cursor = connection.cursor()
-sql = ``SELECT * FROM PatientSurveyData 
-WHERE patient_survey_star_rating = %s''
+sql = ``SELECT * FROM PatientSurveyData WHERE patient_survey_star_rating = %s''
 
 cursor.execute(sql, (starRating))
 result = cursor.fetchall()
 return result
 \end{verbatim}
+\caption{Python code to query the MySQL RDS database}
+\label{f:rdscode}
+\end{figure} 
 
 \subsection{DynamoDB}
 
@@ -539,26 +554,27 @@ just 5 read and write capacity units to keep our costs down. With all of the
 required arguments gathered, we could now submit the resource API call to AWS 
 to create a new table. Creation of the table itself took several minutes and 
 once it was ready to use we were then able to start inserting data into our
-new DynamoDB table~\cite{hid-sp18-521-dynamodbreadwrite}.  
+new DynamoDB table~\cite{hid-sp18-521-dynamodbreadwrite}. The Python code used 
+to create the DynamoDB table is is shown in Figure~\ref{f:dynacreatetable}. 
 
+\begin{figure}[!ht]
 \begin{verbatim}
-dynamodb = boto3.client('dynamodb', 
-region_name='us-east-1', 
+dynamodb = boto3.client('dynamodb', region_name='us-east-1', 
 aws_access_key_id=k1, aws_secret_access_key=k2)
 
 response = dynamodb.create_table
-(TableName='PatientSurveyData',
- KeySchema=[{'AttributeName': 'provider_id',
-  'KeyType': 'HASH'}, ],
- AttributeDefinitions=[
-  {'AttributeName': 'provider_id', 
-   'AttributeType': 'S'}],
- ProvisionedThroughput={'ReadCapacityUnits': 5, 
-  'WriteCapacityUnits': 5},
+   (TableName='PatientSurveyData',
+    KeySchema=[{'AttributeName': 'provider_id', 'KeyType': 'HASH'}, ],
+    AttributeDefinitions=[{'AttributeName': 'provider_id', 
+      'AttributeType': 'S'}],
+    ProvisionedThroughput={'ReadCapacityUnits': 5, 'WriteCapacityUnits': 5},
 )
 
 return response
 \end{verbatim}
+\caption{Python code to create the DynamoDB table}
+\label{f:dynacreatetable}
+\end{figure} 
 
 The resource API for DynamoDB provided a class named table which allowed us to 
 execute table specific functions by providing a table name argument. We also 
@@ -568,28 +584,31 @@ urlopen function was called against the HTTP path of the JSON file and stored
 into a variable. This variable containing the file data could then be read 
 into a loading function provided by the Python JSON library to convert the 
 data into proper JSON format that could be accepted by the DynamoDB put item 
-method~\cite{hid-sp18-521-botodynamodb}.  
-
+method~\cite{hid-sp18-521-botodynamodb}. The Python code used to insert into 
+the DynamoDB table is is shown in Figure~\ref{f:dynainserttable}. 
+ 
+\begin{figure}[!ht]
 \begin{verbatim}
-dynamodb = boto3.resource('dynamodb', 
-region_name='us-east-1', 
+dynamodb = boto3.resource('dynamodb', region_name='us-east-1', 
 aws_access_key_id=k1, aws_secret_access_key=k2)
 
 table = dynamodb.Table('PatientSurveyData')
 
-url = ``https://data.medicare.gov/resource/
-	rmgi-5fhi.json''
+url = ``https://data.medicare.gov/resource/rmgi-5fhi.json''
 
 response = urllib.urlopen(url)
 
-data = json.loads(response.read(), 
-	parse_float=decimal.Decimal)
+data = json.loads(response.read(), parse_float=decimal.Decimal)
 
 for row in data:
-  response = table.put_item(Item=row)
+   response = table.put_item(Item=row)
 
 return response
 \end{verbatim}
+\caption{Python code to insert into the DynamoDB table}
+\label{f:dynainserttable}
+\end{figure} 
+
 
 Upon successful insert of the data into our DynamoDB table, we could then 
 write code to pull back data from the database using the table class from 
@@ -617,21 +636,25 @@ sample dataset, we were interested in returning all of the hospitals from the
 patient survey data that were located in the state of Missouri. To do this, we 
 utilized the eq condition run against the attribute state in order to return 
 all items in the state of MO~\cite{hid-sp18-521-boto-dynamodbconditions}.  
+The Python code used to scan data from the DynamoDB table is is shown in 
+Figure~\ref{f:dynascantable}. 
 
+\begin{figure}[!ht]
 \begin{verbatim}
-dynamodb = boto3.resource('dynamodb', 
-region_name='us-east-1', 
+dynamodb = boto3.resource('dynamodb', region_name='us-east-1', 
 aws_access_key_id=k1, aws_secret_access_key=k2)
 
 table = dynamodb.Table('PatientSurveyData')
 
-response = table.scan
-	(FilterExpression=Attr('state').eq('MO'))
+response = table.scan(FilterExpression=Attr('state').eq('MO'))
 
 items = response['Items']
 
 return items
 \end{verbatim}
+\caption{Python code to scan data from the DynamoDB table}
+\label{f:dynascantable}
+\end{figure} 
 
 Using either the resource or client API, we could then delete the DynamoDB 
 table once it was no longer needed. It was equally simple to delete a table 
@@ -639,18 +662,22 @@ using either API, so we wanted to show how the client API could be used to
 delete a table. It's used similar to other services in that we provide the 
 service name, region and key parameters to allow us to connect to the service 
 and then we could run the delete table method and just supply the table name 
-as a parameter in order to delete our table~\cite{hid-sp18-521-botodynamodb}.  
+as a parameter in order to delete our table~\cite{hid-sp18-521-botodynamodb}.
+The Python code used to delete the DynamoDB table is is shown in 
+Figure~\ref{f:dynadeletetable}. 
 
+\begin{figure}[!ht]
 \begin{verbatim}
-dynamodb = boto3.client('dynamodb', 
-region_name='us-east-1', 
+dynamodb = boto3.client('dynamodb', region_name='us-east-1', 
 aws_access_key_id=k1, aws_secret_access_key=k2)
 
-response = dynamodb.delete_table
-	(TableName='PatientSurveyData')
+response = dynamodb.delete_table(TableName='PatientSurveyData')
 
 return response
-\end{verbatim}	
+\end{verbatim}
+\caption{Python code to delete the DynamoDB table}
+\label{f:dynadeletetable}
+\end{figure} 
 
 \subsection{Redshift}
 
@@ -721,20 +748,22 @@ ignore the header row, remove the quotes from around the values and specify
 the comma delimiter in the source file as a comma. Executing this command 
 within our API would then import the CSV file with our patient survey data on 
 S3 directly into our Redshift 
-table~\cite{hid-sp18-521-redshift-gettingstarted}.  
+table~\cite{hid-sp18-521-redshift-gettingstarted}. The Python code used to 
+import the CSV data from S3 into Redshift is shown in 
+Figure~\ref{f:redshiftload}. 
 
+\begin{figure}[!ht]
 \begin{verbatim}
 redshift = psycopg2.connect(dbname= 'i524', 
-host='iu-sp18.c9tuimcojmsj.us-east-1.
-	redshift.amazonaws.com',
-port= '5439', 
-user= redshift_user, 
+host='iu-sp18.c9tuimcojmsj.us-east-1.redshift.amazonaws.com',
+port='5439', 
+user=redshift_user, 
 password= redshift_password)
 
 cur = redshift.cursor()
 
 cur.execute(``COPY PatientSurveyData 
-FROM 's3://hid-sp18-521/PatientSurveyData.csv' ''
+  FROM 's3://hid-sp18-521/PatientSurveyData.csv' ''
 ``ACCESS_KEY_ID ''' + k1 + 
 ``' SECRET_ACCESS_KEY ''' + k2 + ``' ''
 ``ignoreheader 1 ''
@@ -742,22 +771,27 @@ FROM 's3://hid-sp18-521/PatientSurveyData.csv' ''
 ``delimiter ',';'')
 
 return redshift.commit()
-\end{verbatim}	
+\end{verbatim}
+\caption{Python code to insert S3 data into the Redshift table}
+\label{f:redshiftload}
+\end{figure} 
 
 Then we wanted to provide the ability to query this data from within our code 
 utilizing a SQL select statement. For our example use case, we coded a query 
 to pull each state and their average star rating from the survey data to see 
 how each state did overall at a high level. The execute function then 
 submitted the query from our API and used the cursors fetchall function to 
-store the query results returned back from Redshift into a variable. 
+store the query results returned back from Redshift into a variable. The 
+Python code used to select data from the Redshift table is shown in 
+Figure~\ref{f:redshiftquery}. 
 
+\begin{figure}[!ht]
 \begin{verbatim}
 redshift = psycopg2.connect(dbname= 'i524', 
-host='iu-sp18.c9tuimcojmsj.us-east-1.
-	redshift.amazonaws.com',
-port= '5439', 
-user= redshift_user, 
-password= redshift_password)
+host='iu-sp18.c9tuimcojmsj.us-east-1.redshift.amazonaws.com',
+port='5439', 
+user=redshift_user, 
+password=redshift_password)
 
 cur = redshift.cursor()
 
@@ -773,20 +807,25 @@ redshift.commit()
 
 return sql
 \end{verbatim}	
+\caption{Python code to select data from the Redshift table}
+\label{f:redshiftquery}
+\end{figure} 
+
 
 Code to delete all data from the table was also implemented in order to 
 promote reusability of our Redshift data loading if we ever had the need to 
 reload the table with data from a new version of the S3 patient survey data 
 file. This required just a simple delete statement to remove all rows from our 
-Redshift table. 
+Redshift table. The Python code used to delete data from the Redshift table 
+is shown in Figure~\ref{f:redshiftdelete}. 
 
+\begin{figure}[!ht]
 \begin{verbatim}
 redshift = psycopg2.connect(dbname= 'i524', 
-host='iu-sp18.c9tuimcojmsj.us-east-1.
-	redshift.amazonaws.com',
-port= '5439', 
-user= redshift_user, 
-password= redshift_password)
+host='iu-sp18.c9tuimcojmsj.us-east-1.redshift.amazonaws.com',
+port='5439', 
+user=redshift_user, 
+password=redshift_password)
 
 cur = redshift.cursor()
 
@@ -794,6 +833,10 @@ cur.execute(``DELETE FROM PatientSurveyData'')
 
 return redshift.commit()
 \end{verbatim}
+\caption{Python code to delete data from the Redshift table}
+\label{f:redshiftdelete}
+\end{figure} 
+
 
 \subsection{Athena}
 
@@ -859,44 +902,42 @@ already exists and if not, creates it. Additional properties about the source
 data file format, column separator, skipping the header row and quote 
 identifiers were supplied, as well as the S3 bucket where the source file was 
 located and the S3 bucket where we want the query results to be output 
-to~\cite{hid-sp18-521-athena-gettingstarted}. 
+to~\cite{hid-sp18-521-athena-gettingstarted}. The Python code used to import
+CSV data from S3 into Athena is shown in Figure~\ref{f:athenainsert}. 
 
+\begin{figure}[!ht]
 \begin{verbatim}
-athena = boto3.client('athena', 
-region_name='us-east-1', aws_access_key_id=k1,
+athena = boto3.client('athena', region_name='us-east-1', aws_access_key_id=k1,
 aws_secret_access_key=k2)
 
-with smart_open.smart_open ('s3://' + 
-k1 + ':' + k2 +'@hid-sp18-521/
+with smart_open.smart_open ('s3://' + k1 + ':' + k2 +'@hid-sp18-521/
 athena-input/PatientSurveyData.csv', 'wb') 
 as fout:
   for line in 
-    smart_open.smart_open
-    ('https://data.medicare.gov/resource/
-     rmgi-5fhi.csv'):
+    smart_open.smart_open('https://data.medicare.gov/resource/
+    rmgi-5fhi.csv'):
        response = fout.write(line + '\n')
 
-response = athena.start_query_execution(
-QueryString=``CREATE EXTERNAL TABLE 
+response = athena.start_query_execution(QueryString=``CREATE EXTERNAL TABLE 
 IF NOT EXISTS i524.PatientSurveyData (
 ...columns excluded from example, too many...
 )
 ROW FORMAT SERDE 
-'org.apache.hadoop.hive.serde2.OpenCSVSerde'
-WITH SERDEPROPERTIES (
+'org.apache.hadoop.hive.serde2.OpenCSVSerde' WITH SERDEPROPERTIES (
 'separatorChar' = ',',
 'quoteChar' = '\``'
 )
 STORED AS TEXTFILE 
 LOCATION 's3://hid-sp18-521/athena-input'
-TBLPROPERTIES 
-(``skip.header.line.count''=``1'');'',
+TBLPROPERTIES (``skip.header.line.count''=``1'');'',
 QueryExecutionContext={'Database': 'i524'}, 
-ResultConfiguration=
-{'OutputLocation': 's3://hid-sp18-521'})
+ResultConfiguration={'OutputLocation': 's3://hid-sp18-521'})
 
 return response
 \end{verbatim}
+\caption{Python code to insert S3 CSV data into Athena table}
+\label{f:redshiftdelete}
+\end{figure} 
 
 For our example select query, we wanted to produce the records in the data set 
 for a specific city that is specified by a user parameter in our API. Since 
@@ -905,46 +946,49 @@ to be stored in a CSV output file in the folder parameter we provided during
 the create table statement. This functionality is by default and would then 
 allow us to use the Athena query output in CSV format to send on to other data 
 services for additional analysis if needed~\cite{hid-sp18-521-boto-athena}.  
+The Python code used to query data from the Athena table is shown in
+Figure~\ref{f:athenaquery}. 
 
+\begin{figure}[!ht]
 \begin{verbatim}
 athena = boto3.client('athena', 
-region_name='us-east-1', aws_access_key_id=k1,
-aws_secret_access_key=k2)
+region_name='us-east-1', aws_access_key_id=k1, aws_secret_access_key=k2)
 
-query = 
-'SELECT * 
-FROM patientsurveydata 
-WHERE city = \'%s\'' % (city)
+query = 'SELECT * FROM patientsurveydata WHERE city = \'%s\'' % (city)
 
-response = athena.start_query_execution(
-QueryString=query,
-QueryExecutionContext={'Database': 'i524'}, 
-ResultConfiguration=
-{'OutputLocation': 's3://hid-sp18-521'})
+response = athena.start_query_execution(QueryString=query,
+   QueryExecutionContext={'Database': 'i524'}, 
+   ResultConfiguration={'OutputLocation': 's3://hid-sp18-521'})
 
 return response
 \end{verbatim}
+\caption{Python code to query the Athena table}
+\label{f:athenaquery}
+\end{figure} 
 
 In order to be able to re-run our Athena test cases, we included a function 
 to delete the Athena table so that we could repopulate it on demand as needed 
 and used the same method start query execution that the other two Athena 
 functions do in order to interact with the 
-service~\cite{hid-sp18-521-boto-athena}. 
+service~\cite{hid-sp18-521-boto-athena}. The Python code used to drop the  
+Athena table is shown in Figure~\ref{f:athenadrop}. 
 
+\begin{figure}[!ht]
 \begin{verbatim}
-athena = boto3.client('athena', 
-region_name='us-east-1', aws_access_key_id=k1,
+athena = boto3.client('athena', region_name='us-east-1', aws_access_key_id=k1,
 aws_secret_access_key=k2)
 
-response = athena.start_query_execution(
-QueryString=
+response = athena.start_query_execution(QueryString=
 ``DROP TABLE IF EXISTS PatientSurveyData'',
 QueryExecutionContext={'Database': 'i524'}, 
-ResultConfiguration=
-{'OutputLocation': 's3://hid-sp18-521'})
+ResultConfiguration={'OutputLocation': 's3://hid-sp18-521'})
 
 return response
 \end{verbatim}
+\caption{Python code to drop the Athena table}
+\label{f:athenadrop}
+\end{figure} 
+
 
 \section{Conclusion}
 
